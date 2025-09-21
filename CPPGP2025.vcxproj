@@ -24,6 +24,8 @@
     <ClCompile Include="ZVector3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CPPGP2025.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="ZMatrix.h" />
     <ClInclude Include="ZVector3.h" />
   </ItemGroup>
