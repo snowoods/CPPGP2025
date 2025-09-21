@@ -1,18 +1,51 @@
-﻿// CPPGP2025.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
+// CPPGP2025.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
 //
 
 #include <iostream>
 #include "ZVector3.h"
+#include "ZMatrix.h"
 
 int main()
 {
-    ZVector3 v1(1, 1, 1);
+    ZVector3 v1(1, 2, 3);
     std::cout << v1 << std::endl;
 
-    ZVector3 v2(-1, 1, 1);
-    std::cout << v2.cross(v1) << std::endl;
+    ZVector3 v2(4, -5, 6);
+    std::cout << v2.Cross(v1) << std::endl;
 
-    std::cout << v1.dot(v2) << std::endl;
+    std::cout << ZVector3::Dot(v1, v2) << std::endl;
+    std::cout << v1.radBetween(v1, v2) << std::endl;
+    std::cout << v1.degBetween(v1, v2) << std::endl;
+
+    // Matrix 테스트
+    ZVector3 localPoint(1.0, 1.0, 1.0);
+    std::cout << "Local Space Point: " << localPoint << std::endl;
+
+    // Scale 모든 축으로 2배 확대
+    ZMatrix matScale = ZMatrix::CreateScale(2.0, 2.0, 2.0);
+
+    // Rotation : Y축 90도 회전
+    const double PI = 3.1415926535897932;
+    ZMatrix matRotation = ZMatrix::CreateRotationY(PI / 2.0);
+
+    // Translation : 월드 공간의 (5, 6, 7) 위치로 이동
+    ZMatrix matTranslation = ZMatrix::CreateTranslation(5.0, 6.0, 7.0);
+
+    // 변환을 순차적으로 적용
+    ZVector3 pointAfterScale = localPoint.Transform(matScale);
+    std::cout << pointAfterScale << std::endl;
+
+    ZVector3 pointAfterRotation = pointAfterScale.Transform(matRotation);
+    std::cout << pointAfterRotation << std::endl;
+
+    ZVector3 finalWorldPoint = pointAfterRotation.Transform(matTranslation);
+    std::cout << finalWorldPoint << std::endl;
+
+    // 한방에 월드 매트릭스
+    ZMatrix worldMatrix = matScale * matRotation * matTranslation;
+    ZVector3 finalWorldPointByMatrix = localPoint.Transform(worldMatrix);
+    std::cout << finalWorldPointByMatrix << std::endl;
+
 }
 
 // 프로그램 실행: <Ctrl+F5> 또는 [디버그] > [디버깅하지 않고 시작] 메뉴
