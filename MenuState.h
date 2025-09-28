@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "GameState.h"
 
-class TitleState : public GameState
+class MenuState : public GameState
 {
 public:
 	void Enter(HWND hWnd) override;
