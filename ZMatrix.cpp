@@ -1,4 +1,4 @@
-#include "ZMatrix.h"
+﻿#include "ZMatrix.h"
 #include <cmath> // sin, cos
 
 ZMatrix::ZMatrix()

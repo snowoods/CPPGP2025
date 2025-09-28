@@ -1,4 +1,4 @@
-// CPPGP2025.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
+﻿// CPPGP2025.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
 //
 #define _CRT_SECURE_NO_WARNINGS
 #include <windows.h>
@@ -8,6 +8,7 @@
 #include "ZMatrix.h"
 #include "TitleState.h"
 #include "CPPGP2025.h"
+#include "Bitmap.h"
 
 #define WIN_NAME L"WinAPI State Pattern";
 #define WIN_WIDTH 800
@@ -26,6 +27,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_CREATE:
         timeBeginPeriod(1);
         break;
+
+    case WM_PAINT:
+    {
+        if (g_currentState)
+        {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hWnd, &ps);
+            g_currentState->Render(hdc);
+            EndPaint(hWnd, &ps);
+        }        
+        break;
+    }
+
     case WM_DESTROY: // 창이 닫힐 때 발생
         timeEndPeriod(1);
         PostQuitMessage(0); // 메시지 루프를 종료하도록 요청
