@@ -13,24 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ZD3D11">
+      <UniqueIdentifier>{769aa0d7-6a00-46fe-8464-3eb642e4c2da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CPPGP2025.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ZMatrix.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ZVector3.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="TitleState.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="ZApplication.cpp">
+      <Filter>ZD3D11</Filter>
     </ClCompile>
-    <ClCompile Include="MenuState.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="ZGraphics.cpp">
+      <Filter>ZD3D11</Filter>
     </ClCompile>
-    <ClCompile Include="PlayState.cpp">
+    <ClCompile Include="GameMain.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,23 +41,29 @@
     <ClInclude Include="ZVector3.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="CPPGP2025.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="TitleState.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="MenuState.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayState.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Bitmap.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMain.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameGlobal.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ZD3D11.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ZFrameworkGlobal.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ZApplication.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ZGraphicsGlobal.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ZGraphics.h">
+      <Filter>ZD3D11</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
