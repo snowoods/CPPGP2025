@@ -7,15 +7,33 @@
 #include "Bitmap.h"
 
 #pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "gdiplus.lib")
 
 extern void ChangeState(GameState* newState);
 
-BmpImage g_bmpMenu;
+MenuState::MenuState()
+	: m_pBitmap(nullptr)
+{
+}
+
+MenuState::~MenuState()
+{
+	if (m_pBitmap)
+	{
+		delete m_pBitmap;
+		m_pBitmap = nullptr;
+	}
+}
 
 void MenuState::Enter(HWND hWnd)
 {
 	std::cout << "Enter MenuState" << std::endl;
-	if (!g_bmpMenu.Load(L"GameOver.bmp")) {
+
+	mciSendString(L"open \"lostark_menu.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
+	mciSendString(L"play mp3", NULL, 0, NULL);
+
+	m_pBitmap = new BmpImage();
+	if (!m_pBitmap->Load(L"lostark_menu.bmp")) {
 		MessageBox(hWnd, L"BMP 파일 로드 실패!", L"Error", MB_ICONERROR);
 	}
 }
@@ -23,6 +41,15 @@ void MenuState::Enter(HWND hWnd)
 void MenuState::Exit()
 {
 	std::cout << "Exit MenuState" << std::endl;
+
+	mciSendString(L"stop mp3", NULL, 0, NULL);
+	mciSendString(L"close mp3", NULL, 0, NULL);
+
+	if (m_pBitmap)
+	{
+		delete m_pBitmap;
+		m_pBitmap = nullptr;
+	}
 }
 
 void MenuState::Update(float elapsedTime)
@@ -32,7 +59,14 @@ void MenuState::Update(float elapsedTime)
 
 void MenuState::Render(HDC hdc)
 {
-	g_bmpMenu.Draw(hdc, 10, 10);
+	// 화면을 검은색으로 지운다.
+	//HWND hWnd = GetActiveWindow();
+	//RECT rect;
+	//GetClientRect(hWnd, &rect);
+	//FillRect(hdc, &rect, (HBRUSH)GetStockObject(BLACK_BRUSH));
+
+	if(m_pBitmap)
+		m_pBitmap->Draw(hdc, 0, 0);
 	/*
 	RECT rect;
 	GetClientRect(GetActiveWindow(), &rect);

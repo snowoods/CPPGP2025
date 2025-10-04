@@ -10,9 +10,9 @@
 #include "CPPGP2025.h"
 #include "Bitmap.h"
 
-#define WIN_NAME L"WinAPI State Pattern";
-#define WIN_WIDTH 800
-#define WIN_HEIGHT 600
+#define WIN_NAME L"WinAPI State Pattern"
+#define WIN_WIDTH 1920
+#define WIN_HEIGHT 1080
 
 GameState* g_currentState = nullptr;
 HWND g_hWnd;
@@ -25,20 +25,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
     case WM_CREATE:
+        g_hWnd = hWnd;
         timeBeginPeriod(1);
         break;
 
     case WM_PAINT:
     {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
         if (g_currentState)
         {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
             g_currentState->Render(hdc);
-            EndPaint(hWnd, &ps);
-        }        
-        break;
+        }
+        EndPaint(hWnd, &ps);
     }
+    break;
 
     case WM_DESTROY: // 창이 닫힐 때 발생
         timeEndPeriod(1);
@@ -106,15 +107,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // 윈도우 클래스 등록
     RegisterClass(&wc);
 
+    // 화면 중앙에 윈도우를 생성하기 위한 좌표 계산
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    int windowX = (screenWidth - WIN_WIDTH) / 2;
+    int windowY = (screenHeight - WIN_HEIGHT) / 2;
+
     // 윈도우 생성
-    HWND hWnd = CreateWindowEx(
+    g_hWnd = CreateWindowEx(
         0,                      // 확장 윈도우 스타일
         L"CPPGPClass",          // 윈도우 클래스 이름
-        L"CPPGP",               // 윈도우 제목
+        WIN_NAME,               // 윈도우 제목
         WS_OVERLAPPEDWINDOW,    // 윈도우 스타일
 
         // 크기 및 위치
-        CW_USEDEFAULT, CW_USEDEFAULT, WIN_WIDTH, WIN_HEIGHT,
+        windowX, windowY, WIN_WIDTH, WIN_HEIGHT,
 
         NULL, // 부모 윈도우
         NULL, // 메뉴
@@ -122,15 +129,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         NULL // 추가 애플리케이션 데이터
     );
 
-    if (hWnd == NULL)
+    if (g_hWnd == NULL)
     {
         std::cout << "Failed to create window!" << std::endl;
         return 0;
     }
 
     // 윈도우를 화면에 표시 및 업데이트
-    ShowWindow(hWnd, nCmdShow);
-    UpdateWindow(hWnd);
+    ShowWindow(g_hWnd, nCmdShow);
+    UpdateWindow(g_hWnd);
 
     // 시작 상태
     ChangeState(new TitleState());
@@ -138,25 +145,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     long long prevTime = timeGetTime();
 
     MSG msg = {};
-    while (GetMessage(&msg, NULL, 0, 0))
+    while (msg.message != WM_QUIT)
     {
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
+            std::cout << "PeekMessage is not null!" << std::endl;
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
         else
         {
+            std::cout << "PeekMessage is null!" << std::endl;
+            
             long long currentTime = timeGetTime();
             float elapsedTime = (currentTime - prevTime) / 1000.0f;
             prevTime = currentTime;
 
-            if (g_currentState)
+            //std::cout << elapsedTime << std::endl;
+
+            if (g_currentState && g_hWnd)
             {
                 g_currentState->Update(elapsedTime);
-            }
 
-            InvalidateRect(g_hWnd, NULL, FALSE);
+                // InvalidateRect() 함수를 호출하여 WM_PAINT 메시지를 발생시켜 화면을 갱신합니다.
+                InvalidateRect(g_hWnd, NULL, FALSE);
+            }
         }
     }
 

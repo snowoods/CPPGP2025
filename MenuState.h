@@ -1,9 +1,15 @@
-﻿#pragma once
+#pragma once
 #include "GameState.h"
+#include "Bitmap.h"
 
 class MenuState : public GameState
 {
+private:
+	BmpImage* m_pBitmap;
 public:
+	MenuState();
+	~MenuState();
+
 	void Enter(HWND hWnd) override;
 	void Exit() override;
 	void Update(float elapsedTime) override;
