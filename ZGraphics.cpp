@@ -1,4 +1,5 @@
-﻿#include "ZD3D11.h"
+#include "ZD3D11.h"
+#include <iostream>
 
 #pragma comment(lib,"d3d11.lib")
 
@@ -34,21 +35,54 @@ ZGraphics::ZGraphics(HWND hWnd)
 	// 추가적인 플래그를 설정합니다.
 	sd.Flags = 0;
 
+	// 지원할 기능 수준(Feature Level) 배열을 정의합니다.
+	D3D_FEATURE_LEVEL featureLevels[] = {
+		D3D_FEATURE_LEVEL_11_1,
+		D3D_FEATURE_LEVEL_11_0,
+		D3D_FEATURE_LEVEL_10_1,
+		D3D_FEATURE_LEVEL_10_0,
+	};
+	UINT numFeatureLevels = ARRAYSIZE(featureLevels);
+
+	D3D_FEATURE_LEVEL featureLevel;
+
 	// D3D11 장치(Device), 장치 컨텍스트(Context), 스왑 체인(Swap Chain)을 생성합니다.
-	D3D11CreateDeviceAndSwapChain(
+	HRESULT hr = D3D11CreateDeviceAndSwapChain(
 		nullptr,						// pAdapter: 기본 어댑터(그래픽 카드)를 사용합니다.
 		D3D_DRIVER_TYPE_HARDWARE,		// DriverType: 하드웨어 가속을 사용합니다.
 		nullptr,						// Software: 하드웨어 드라이버를 사용하므로 NULL입니다.
 		0,							// Flags: 추가적인 생성 플래그 (예: 디버그 모드)
-		nullptr,						// pFeatureLevels: 지원할 기능 수준 배열, NULL이면 기본값을 사용합니다.
-		0,							// FeatureLevels: 기능 수준 배열의 크기입니다.
+		featureLevels,				// pFeatureLevels: 지원할 기능 수준 배열입니다.
+		numFeatureLevels,				// FeatureLevels: 기능 수준 배열의 크기입니다.
 		D3D11_SDK_VERSION,			// SDKVersion: 항상 D3D11_SDK_VERSION으로 설정합니다.
 		&sd,						// pSwapChainDesc: 위에서 설정한 스왑 체인 설정 구조체입니다.
 		&pSwap,						// ppSwapChain: 생성된 스왑 체인 인터페이스를 받을 포인터입니다.
 		&pDevice,					// ppDevice: 생성된 장치 인터페이스를 받을 포인터입니다.
-		nullptr,						// pFeatureLevel: 실제로 선택된 기능 수준을 받을 포인터입니다.
+		&featureLevel,				// pFeatureLevel: 실제로 선택된 기능 수준을 받을 포인터입니다.
 		&pContext					// ppImmediateContext: 생성된 장치 컨텍스트를 받을 포인터입니다.
 	);
+
+	if (SUCCEEDED(hr))
+	{
+		switch (featureLevel)
+		{
+			case D3D_FEATURE_LEVEL_11_1:
+				std::cout << "D3D Feature Level: 11.1" << std::endl;
+				break;
+			case D3D_FEATURE_LEVEL_11_0:
+				std::cout << "D3D Feature Level: 11.0" << std::endl;
+				break;
+			case D3D_FEATURE_LEVEL_10_1:
+				std::cout << "D3D Feature Level: 10.1" << std::endl;
+				break;
+			case D3D_FEATURE_LEVEL_10_0:
+				std::cout << "D3D Feature Level: 10.0" << std::endl;
+				break;
+			default:
+				std::cout << "D3D Feature Level: Unknown" << std::endl;
+				break;
+		}
+	}
 
 	// 스왑 체인으로부터 후면 버퍼에 접근하기 위한 리소스를 가져옵니다.
 	ID3D11Resource* pBackBuffer = nullptr;
