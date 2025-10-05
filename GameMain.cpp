@@ -4,7 +4,15 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	ZApp Game(_T("My D3D Test"), 0, 0, 800, 600);
+	// 화면 중앙 위치 계산
+	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	const int windowWidth = 800;
+	const int windowHeight = 600;
+	int x = (screenWidth - windowWidth) / 2;
+	int y = (screenHeight - windowHeight) / 2;
+
+	ZApp Game(_T("My D3D Test"), x, y, windowWidth, windowHeight);
 	return Game.Run();
 }
 
