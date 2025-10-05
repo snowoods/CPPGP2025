@@ -1,4 +1,4 @@
-﻿#include "ZD3D11.h"
+#include "ZD3D11.h"
 #include <iostream>
 #include <d3d12.h> // D3D12 헤더 추가
 
@@ -92,12 +92,19 @@ ZGraphics::ZGraphics(HWND hWnd)
 
 	D3D_FEATURE_LEVEL featureLevel;
 
+	UINT creationFlags = 0;
+#if defined(_DEBUG)
+	// 디버그 빌드에서는 D3D11 디버그 레이어를 활성화합니다.
+	// 이를 통해 API 사용 오류, 메모리 누수 등 다양한 디버깅 정보를 얻을 수 있습니다.
+	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
 	// D3D11 장치(Device), 장치 컨텍스트(Context), 스왑 체인(Swap Chain)을 생성합니다.
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(
 		nullptr,						// pAdapter: 기본 어댑터(그래픽 카드)를 사용합니다.
 		D3D_DRIVER_TYPE_HARDWARE,		// DriverType: 하드웨어 가속을 사용합니다.
 		nullptr,						// Software: 하드웨어 드라이버를 사용하므로 NULL입니다.
-		0,							// Flags: 추가적인 생성 플래그 (예: 디버그 모드)
+		creationFlags,					// Flags: 추가적인 생성 플래그 (예: 디버그 모드)
 		featureLevels,				// pFeatureLevels: 지원할 기능 수준 배열입니다.
 		numFeatureLevels,				// FeatureLevels: 기능 수준 배열의 크기입니다.
 		D3D11_SDK_VERSION,			// SDKVersion: 항상 D3D11_SDK_VERSION으로 설정합니다.
