@@ -24,6 +24,7 @@
     <ClCompile Include="ZGraphics.cpp" />
     <ClCompile Include="ZMatrix.cpp" />
     <ClCompile Include="ZVector3.cpp" />
+    <ClCompile Include="ZVector4.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitmap.h" />
@@ -36,6 +37,7 @@
     <ClInclude Include="ZGraphicsGlobal.h" />
     <ClInclude Include="ZMatrix.h" />
     <ClInclude Include="ZVector3.h" />
+    <ClInclude Include="ZVector4.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -139,7 +141,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>

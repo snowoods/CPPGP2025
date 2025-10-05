@@ -18,12 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ZMatrix.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ZVector3.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ZApplication.cpp">
       <Filter>ZD3D11</Filter>
     </ClCompile>
@@ -33,14 +27,17 @@
     <ClCompile Include="GameMain.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ZMatrix.cpp">
+      <Filter>ZD3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="ZVector3.cpp">
+      <Filter>ZD3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="ZVector4.cpp">
+      <Filter>ZD3D11</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ZMatrix.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ZVector3.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Bitmap.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -63,6 +60,15 @@
       <Filter>ZD3D11</Filter>
     </ClInclude>
     <ClInclude Include="ZGraphics.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ZMatrix.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ZVector3.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ZVector4.h">
       <Filter>ZD3D11</Filter>
     </ClInclude>
   </ItemGroup>
