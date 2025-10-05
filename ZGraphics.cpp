@@ -1,4 +1,4 @@
-#include "ZD3D11.h"
+﻿#include "ZD3D11.h"
 #include <iostream>
 #include <d3d12.h> // D3D12 헤더 추가
 
@@ -166,22 +166,10 @@ ZGraphics::~ZGraphics()
 {
 	// 생성된 순서의 역순으로 COM 객체들을 안전하게 해제합니다.
 	// SAFE_RELEASE 매크로를 사용하면 더 안전하게 처리할 수 있습니다.
-	if (pTarget != nullptr)
-	{
-		pTarget->Release();
-	}
-	if (pContext != nullptr)
-	{
-		pContext->Release();
-	}
-	if (pSwap != nullptr)
-	{
-		pSwap->Release();
-	}
-	if (pDevice != nullptr)
-	{
-		pDevice->Release();
-	}
+	SAFE_RELEASE(pTarget);
+	SAFE_RELEASE(pContext);
+	SAFE_RELEASE(pSwap);
+	SAFE_RELEASE(pDevice);
 }
 
 void ZGraphics::EndFrame()

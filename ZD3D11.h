@@ -15,10 +15,10 @@
 
 //------------------------------------------------------------------------------
 
-#define randomize() srand((unsigned)time(NULL))
-#define SAFE_DELETE(p)			{ if(p) { delete (p);		(p)=NULL; }}
-#define SAFE_DELETE_ARRAY(p)	{ if(p) { delete[] (p);		(p)=NULL; }}
-#define SAFE_RELEASE(p)			{ if(p) { (p)->Release();	(p)=NULL; }}
+#define randomize() srand((unsigned)time(nullptr))
+#define SAFE_DELETE(p)			{ if(p) { delete (p);		(p)=nullptr; }}
+#define SAFE_DELETE_ARRAY(p)	{ if(p) { delete[] (p);		(p)=nullptr; }}
+#define SAFE_RELEASE(p)			{ if(p) { (p)->Release();	(p)=nullptr; }}
 
 inline int RectWidth(RECT& rc) { return ((rc).right - (rc).left); }
 inline int RectHeight(RECT& rc) { return ((rc).bottom - (rc).top); }
