@@ -1,6 +1,5 @@
 ﻿#include "ZD3D11.h"
 #include <iostream>
-#include <d3d12.h> // D3D12 헤더 추가
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib, "d3d12.lib") // D3D12 라이브러리 추가
@@ -190,4 +189,135 @@ void ZGraphics::ClearBuffer(float red, float green, float blue) noexcept
 	// 렌더 타겟 뷰를 지정된 색상으로 초기화합니다.
 	const float color[] = { red,green,blue,1.0f }; // RGBA 순서
 	pContext->ClearRenderTargetView(pTarget, color);
+}
+
+
+
+
+// Graphics exception stuff
+ZGraphics::HrException::HrException(int line, const char* file, HRESULT hr, std::vector<std::string> infoMsgs) noexcept
+	:
+	Exception(line, file),
+	hr(hr)
+{
+	// join all info messages with newlines into single string
+	for (const auto& m : infoMsgs)
+	{
+		info += m;
+		info.push_back('\n');
+	}
+	// remove final newline if exists
+	if (!info.empty())
+	{
+		info.pop_back();
+	}
+}
+
+const char* ZGraphics::HrException::what() const noexcept
+{
+	std::ostringstream oss;
+	oss << GetType() << std::endl
+		<< "[Error Code] 0x" << std::hex << std::uppercase << GetErrorCode()
+		<< std::dec << " (" << (unsigned long)GetErrorCode() << ")" << std::endl
+		<< "[Error String] " << GetErrorString() << std::endl
+		<< "[Description] " << GetErrorDescription() << std::endl;
+	if (!info.empty())
+	{
+		oss << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
+	}
+	oss << GetOriginString();
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
+}
+
+const char* ZGraphics::HrException::GetType() const noexcept
+{
+	return "Chili Graphics Exception";
+}
+
+HRESULT ZGraphics::HrException::GetErrorCode() const noexcept
+{
+	return hr;
+}
+
+std::string ZGraphics::HrException::GetErrorString() const noexcept
+{
+	// DXGetErrorString은 TCHAR*를 반환하므로, std::string으로 변환해야 합니다.
+	const TCHAR* errorString = DXGetErrorString(hr);
+#ifdef _UNICODE
+	// 유니코드 환경에서는 wchar_t*를 char*로 변환합니다.
+	std::wstring w_str(errorString);
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, &w_str[0], (int)w_str.size(), NULL, 0, NULL, NULL);
+	std::string str_to(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, &w_str[0], (int)w_str.size(), &str_to[0], size_needed, NULL, NULL);
+	return str_to;
+#else
+	// 멀티바이트 환경에서는 바로 변환 가능합니다.
+	return std::string(errorString);
+#endif
+}
+
+std::string ZGraphics::HrException::GetErrorDescription() const noexcept
+{
+	TCHAR buf[512];
+	DXGetErrorDescription(hr, buf, sizeof(buf));
+#ifdef _UNICODE
+	// 유니코드 환경에서는 wchar_t*를 char*로 변환합니다.
+	std::wstring w_str(buf);
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, &w_str[0], (int)w_str.size(), NULL, 0, NULL, NULL);
+	std::string str_to(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, &w_str[0], (int)w_str.size(), &str_to[0], size_needed, NULL, NULL);
+	return str_to;
+#else
+	// 멀티바이트 환경에서는 바로 변환 가능합니다.
+	return std::string(buf);
+#endif
+}
+
+std::string ZGraphics::HrException::GetErrorInfo() const noexcept
+{
+	return info;
+}
+
+
+const char* ZGraphics::DeviceRemovedException::GetType() const noexcept
+{
+	return "Chili Graphics Exception [Device Removed] (DXGI_ERROR_DEVICE_REMOVED)";
+}
+ZGraphics::InfoException::InfoException(int line, const char* file, std::vector<std::string> infoMsgs) noexcept
+	:
+	Exception(line, file)
+{
+	// join all info messages with newlines into single string
+	for (const auto& m : infoMsgs)
+	{
+		info += m;
+		info.push_back('\n');
+	}
+	// remove final newline if exists
+	if (!info.empty())
+	{
+		info.pop_back();
+	}
+}
+
+
+const char* ZGraphics::InfoException::what() const noexcept
+{
+	std::ostringstream oss;
+	oss << GetType() << std::endl
+		<< "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
+	oss << GetOriginString();
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
+}
+
+const char* ZGraphics::InfoException::GetType() const noexcept
+{
+	return "Chili Graphics Info Exception";
+}
+
+std::string ZGraphics::InfoException::GetErrorInfo() const noexcept
+{
+	return info;
 }

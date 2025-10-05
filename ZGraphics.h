@@ -13,6 +13,44 @@ private:
 	ID3D11RenderTargetView* pTarget = nullptr;	// 렌더 타겟 뷰, 렌더링 결과가 저장되는 곳
 
 public:
+	class Exception : public ChiliException
+	{
+		using ChiliException::ChiliException;
+	};
+	class HrException : public Exception
+	{
+	public:
+		HrException(int line, const char* file, HRESULT hr, std::vector<std::string> infoMsgs = {}) noexcept;
+		const char* what() const noexcept override;
+		const char* GetType() const noexcept override;
+		HRESULT GetErrorCode() const noexcept;
+		std::string GetErrorString() const noexcept;
+		std::string GetErrorDescription() const noexcept;
+		std::string GetErrorInfo() const noexcept;
+	private:
+		HRESULT hr;
+		std::string info;
+	};
+	class InfoException : public Exception
+	{
+	public:
+		InfoException(int line, const char* file, std::vector<std::string> infoMsgs) noexcept;
+		const char* what() const noexcept override;
+		const char* GetType() const noexcept override;
+		std::string GetErrorInfo() const noexcept;
+	private:
+		std::string info;
+	};
+	class DeviceRemovedException : public HrException
+	{
+		using HrException::HrException;
+	public:
+		const char* GetType() const noexcept override;
+	private:
+		std::string reason;
+	};
+
+public:
 	ZGraphics(HWND hWnd);
 
 	// 복사 생성자와 대입 연산자를 사용하지 않는다. (객체 복사 방지)

@@ -4,14 +4,20 @@
 
 // Windows includes
 #include <windows.h>
+//#include "ChiliWin.h"
+//#include "ChiliWRL.h"
 #include <tchar.h>
 
 // Standard ANSI-C includes
 #include <time.h>
 #include <iostream>
+#include <sstream>
+#include <vector>
 
 // DirectX includes
-#include "d3d11.h"
+#include <d3d11.h>
+#include <d3d12.h>
+#include "dxerr.h"
 
 //------------------------------------------------------------------------------
 
