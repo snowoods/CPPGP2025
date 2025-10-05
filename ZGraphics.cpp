@@ -146,11 +146,16 @@ ZGraphics::ZGraphics(HWND hWnd)
 		}
 	}
 
-	// 스왑 체인으로부터 후면 버퍼에 접근하기 위한 리소스를 가져옵니다.
+	// [주요 개념: GetBuffer와 스왑 체인]
+	// 스왑 체인으로부터 후면 버퍼(Back Buffer)에 접근하기 위한 리소스를 가져옵니다.
+	// - 첫 번째 인자 '0': 스왑 체인의 첫 번째 버퍼, 즉 '후면 버퍼'를 의미합니다. 모든 렌더링은 이 버퍼에 이루어집니다.
+	// - 전면 버퍼(Front Buffer): 현재 화면에 표시되는 버퍼로, GetBuffer()를 통해 직접 접근할 수 없습니다.
+	// - Present() 호출: 후면 버퍼의 내용을 전면 버퍼로 보내 화면에 표시하는 역할을 합니다. (실제로는 포인터 교체(Flip) 방식이 주로 사용됨)
+	// - 트리플 버퍼링: BufferCount를 2 이상으로 설정하면, 인덱스 1은 '두 번째 후면 버퍼'를 의미합니다. 이는 V-Sync 시 GPU의 대기 시간을 줄여 성능 저하를 완화하는 데 사용됩니다.
 	ID3D11Resource* pBackBuffer = nullptr;
 	pSwap->GetBuffer(0, __uuidof(ID3D11Resource), reinterpret_cast<void**>(&pBackBuffer));
 
-	// 후면 버퍼에 대한 렌더 타겟 뷰를 생성합니다.
+	// 후면 버퍼에 대한 RTV(Render Target View)를 생성합니다.
 	// 렌더링 파이프라인의 최종 출력은 이 렌더 타겟 뷰에 쓰여집니다.
 	pDevice->CreateRenderTargetView(
 		pBackBuffer,		// pResource: 렌더 타겟으로 사용할 리소스 (후면 버퍼)
@@ -158,7 +163,7 @@ ZGraphics::ZGraphics(HWND hWnd)
 		&pTarget			// ppRTView: 생성된 렌더 타겟 뷰를 받을 포인터입니다.
 	);
 
-	// 렌더 타겟 뷰를 생성했으므로 후면 버퍼 리소스는 더 이상 필요 없으므로 해제합니다.
+	// 렌더 타겟 뷰를 생성했으므로 후면 버퍼에 접근하는 리소스는 더 이상 필요 없으므로 해제합니다.
 	pBackBuffer->Release();
 }
 
