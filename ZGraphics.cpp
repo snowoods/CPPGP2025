@@ -2,50 +2,12 @@
 #include <iostream>
 
 #pragma comment(lib,"d3d11.lib")
-#pragma comment(lib, "d3d12.lib") // D3D12 라이브러리 추가
 
-void ZGraphics::CheckMaxD3D12FeatureLevel()
-{
-	// --- 시스템의 최대 D3D 기능 수준 확인 ---
-	// D3D12를 포함하여 시스템이 지원하는 가장 높은 기능 수준을 확인합니다.
-	// 실제 렌더링은 D3D11로 진행되지만, 시스템의 D3D12 지원 현황을 파악하기 위한 목적입니다.
-	const D3D_FEATURE_LEVEL featureLevelsToCheck[] = {
-		D3D_FEATURE_LEVEL_12_2,
-		D3D_FEATURE_LEVEL_12_1,
-		D3D_FEATURE_LEVEL_12_0,
-	};
 
-	bool d3d12Supported = false;
-	for (D3D_FEATURE_LEVEL level : featureLevelsToCheck)
-	{
-		ID3D12Device* pDevice12 = nullptr;
-		HRESULT hr12 = D3D12CreateDevice(nullptr, level, __uuidof(ID3D12Device), (void**)&pDevice12);
-		if (SUCCEEDED(hr12))
-		{
-			switch (level)
-			{
-				case D3D_FEATURE_LEVEL_12_2: std::cout << "Max Supported D3D Feature Level: 12.2" << std::endl; break;
-				case D3D_FEATURE_LEVEL_12_1: std::cout << "Max Supported D3D Feature Level: 12.1" << std::endl; break;
-				case D3D_FEATURE_LEVEL_12_0: std::cout << "Max Supported D3D Feature Level: 12.0" << std::endl; break;
-			}
-			pDevice12->Release();
-			d3d12Supported = true;
-			break; // 가장 높은 지원 수준을 찾았으므로 루프를 종료합니다.
-		}
-	}
 
-	if (!d3d12Supported)
-	{
-		std::cout << "D3D12 is not supported. The highest feature level will be determined by D3D11." << std::endl;
-	}
-}
 
 ZGraphics::ZGraphics(HWND hWnd)
 {
-	CheckMaxD3D12FeatureLevel();
-
-	// --- D3D11 초기화 시작 ---
-
 	// 스왑 체인을 설정하기 위한 구조체입니다.
 	DXGI_SWAP_CHAIN_DESC sd = {};
 	// 후면 버퍼의 너비와 높이를 설정합니다. 0으로 설정하면 윈도우 크기에 맞춰 자동으로 조절됩니다.

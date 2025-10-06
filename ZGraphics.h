@@ -5,8 +5,6 @@
 class ZGraphics
 {
 private:
-	void CheckMaxD3D12FeatureLevel();
-
 	ID3D11Device* pDevice = nullptr;			// D3D11 장치, 리소스 생성 및 관리
 	IDXGISwapChain* pSwap = nullptr;			// 스왑 체인, 후면 버퍼와 화면 출력을 교체
 	ID3D11DeviceContext* pContext = nullptr;	// D3D11 장치 컨텍스트, 렌더링 명령을 GPU에 전달
