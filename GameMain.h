@@ -11,7 +11,7 @@ public:
 	virtual LRESULT CALLBACK MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	ZApp(const TCHAR* pszCaption, DWORD XPos = 0, DWORD YPos = 0, DWORD Width = 640, DWORD Height = 480);
-	~ZApp();
+	virtual ~ZApp();
 
 	DWORD GetWidth();
 	DWORD GetHeight();

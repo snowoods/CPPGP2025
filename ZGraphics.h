@@ -1,14 +1,25 @@
 ﻿#pragma once
+#include "ChiliException.h"
+//#include <d3d11.h>
+//#include <vector>
+//#include <string>
+//#include <memory>
+#include "DxgiInfoManager.h"
 
 // D3D 11의 초기화 및 핵심 인터페이스 관리
 
 class ZGraphics
 {
+	friend class ZGraphicsResource;
+
 private:
 	ID3D11Device* pDevice = nullptr;			// D3D11 장치, 리소스 생성 및 관리
 	IDXGISwapChain* pSwap = nullptr;			// 스왑 체인, 후면 버퍼와 화면 출력을 교체
 	ID3D11DeviceContext* pContext = nullptr;	// D3D11 장치 컨텍스트, 렌더링 명령을 GPU에 전달
 	ID3D11RenderTargetView* pTarget = nullptr;	// 렌더 타겟 뷰, 렌더링 결과가 저장되는 곳
+#ifndef NDEBUG
+	DxgiInfoManager infoManager;
+#endif
 
 public:
 	class Exception : public ChiliException
@@ -65,4 +76,5 @@ public:
 	// green (0.0f ~ 1.0f)
 	// blue (0.0f ~ 1.0f)
 	void ClearBuffer(float red, float green, float blue) noexcept;
+
 };

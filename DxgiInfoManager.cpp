@@ -1,8 +1,10 @@
-﻿#include "DxgiInfoManager.h"
-//#include "Window.h"
+﻿//#include "Window.h"
+#include "ChiliWin.h"
+#include "ChiliException.h"
 #include "ZD3D11.h"
-#include <dxgidebug.h>
-#include <memory>
+#include "DxgiInfoManager.h"
+//#include <dxgidebug.h>
+//#include <memory>
 #include "GraphicsThrowMacros.h"
 #include "WindowsThrowMacros.h"
 
@@ -39,6 +41,8 @@ void DxgiInfoManager::Set() noexcept
 	// set the index (next) so that the next all to GetMessages()
 	// will only get errors generated after this call
 	next = pDxgiInfoQueue->GetNumStoredMessages(DXGI_DEBUG_ALL);
+	// DXGI_DEBUG_ID
+	// https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-debug-id
 }
 
 std::vector<std::string> DxgiInfoManager::GetMessages() const
