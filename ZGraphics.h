@@ -1,9 +1,6 @@
 ﻿#pragma once
 #include "ChiliException.h"
-//#include <d3d11.h>
-//#include <vector>
-//#include <string>
-//#include <memory>
+#include <wrl.h> // ComPtr
 #include "DxgiInfoManager.h"
 
 // D3D 11의 초기화 및 핵심 인터페이스 관리
@@ -13,10 +10,10 @@ class ZGraphics
 	friend class ZGraphicsResource;
 
 private:
-	ID3D11Device* pDevice = nullptr;			// D3D11 장치, 리소스 생성 및 관리
-	IDXGISwapChain* pSwap = nullptr;			// 스왑 체인, 후면 버퍼와 화면 출력을 교체
-	ID3D11DeviceContext* pContext = nullptr;	// D3D11 장치 컨텍스트, 렌더링 명령을 GPU에 전달
-	ID3D11RenderTargetView* pTarget = nullptr;	// 렌더 타겟 뷰, 렌더링 결과가 저장되는 곳
+	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;
+	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwap;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pTarget;
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;
 #endif
@@ -67,7 +64,7 @@ public:
 	ZGraphics(const ZGraphics&) = delete;
 	ZGraphics& operator=(const ZGraphics&) = delete;
 
-	~ZGraphics();
+	~ZGraphics() = default;
 
 	// 현재 프레임의 렌더링을 끝내고 후면 버퍼를 화면에 표시한다.
 	void EndFrame();

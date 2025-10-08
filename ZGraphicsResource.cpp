@@ -4,10 +4,10 @@
 
 ID3D11DeviceContext* ZGraphicsResource::GetContext(ZGraphics& gfx) noexcept
 {
-	return gfx.pContext;
+	return gfx.pContext.Get();
 }
 
 ID3D11Device* ZGraphicsResource::GetDevice(ZGraphics& gfx) noexcept
 {
-	return gfx.pDevice;
+	return gfx.pDevice.Get();
 }

@@ -1,4 +1,4 @@
-#include "ZD3D11.h"
+﻿#include "ZD3D11.h"
 #include <sstream>
 #include "GraphicsThrowMacros.h"
 #include <d3dcompiler.h>
@@ -115,43 +115,38 @@ ZGraphics::ZGraphics(HWND hWnd)
 	// - 전면 버퍼(Front Buffer): 현재 화면에 표시되는 버퍼로, GetBuffer()를 통해 직접 접근할 수 없습니다.
 	// - Present() 호출: 후면 버퍼의 내용을 전면 버퍼로 보내 화면에 표시하는 역할을 합니다. (실제로는 포인터 교체(Flip) 방식이 주로 사용됨)
 	// - 트리플 버퍼링: BufferCount를 2 이상으로 설정하면, 인덱스 1은 '두 번째 후면 버퍼'를 의미합니다. 이는 V-Sync 시 GPU의 대기 시간을 줄여 성능 저하를 완화하는 데 사용됩니다.
-	ID3D11Resource* pBackBuffer = nullptr;
-		GFX_THROW_INFO(pSwap->GetBuffer(0, __uuidof(ID3D11Resource), reinterpret_cast<void**>(&pBackBuffer)));
+	wrl::ComPtr<ID3D11Resource> pBackBuffer;
+	GFX_THROW_INFO(pSwap->GetBuffer(0, __uuidof(ID3D11Resource), &pBackBuffer));
 
 	// 후면 버퍼에 대한 RTV(Render Target View)를 생성합니다.
 	// 렌더링 파이프라인의 최종 출력은 이 렌더 타겟 뷰에 쓰여집니다.
-		GFX_THROW_INFO(pDevice->CreateRenderTargetView(
-		pBackBuffer,		// pResource: 렌더 타겟으로 사용할 리소스 (후면 버퍼)
+	GFX_THROW_INFO(pDevice->CreateRenderTargetView(
+		pBackBuffer.Get(),		// pResource: 렌더 타겟으로 사용할 리소스 (후면 버퍼)
 		nullptr,			// pDesc: 렌더 타겟 뷰 설정, NULL이면 리소스의 기본 설정을 따릅니다.
 		&pTarget			// ppRTView: 생성된 렌더 타겟 뷰를 받을 포인터입니다.
 	));
-
-	// 렌더 타겟 뷰를 생성했으므로 후면 버퍼에 접근하는 리소스는 더 이상 필요 없으므로 해제합니다.
-	pBackBuffer->Release();
 }
-
-ZGraphics::~ZGraphics() = default;
 
 void ZGraphics::EndFrame()
 {
-	// 후면 버퍼의 내용을 화면에 표시(Present)합니다.
-	// 첫 번째 인자(SyncInterval): 수직 동기화 옵션. 1은 수직 동기화를 켭니다.
-	// 두 번째 인자(Flags): 추가적인 프레젠테이션 옵션.
-	//pSwap->Present(1u, 0u);
+	HRESULT hr;
 
-		HRESULT hr;
 #ifndef NDEBUG
 	infoManager.Set();
 #endif
+
+	// 후면 버퍼의 내용을 화면에 표시(Present)합니다.
+	// 첫 번째 인자(SyncInterval): 수직 동기화 옵션. 1은 수직 동기화를 켭니다.
+	// 두 번째 인자(Flags): 추가적인 프레젠테이션 옵션.
 	if (FAILED(hr = pSwap->Present(1u, 0u)))
 	{
 		if (hr == DXGI_ERROR_DEVICE_REMOVED)
 		{
-						throw GFX_DEVICE_REMOVED_EXCEPT(pDevice->GetDeviceRemovedReason());
+			throw GFX_DEVICE_REMOVED_EXCEPT(pDevice->GetDeviceRemovedReason());
 		}
 		else
 		{
-						throw GFX_EXCEPT(hr);
+			throw GFX_EXCEPT(hr);
 		}
 	}
 }
@@ -160,7 +155,7 @@ void ZGraphics::ClearBuffer(float red, float green, float blue) noexcept
 {
 	// 렌더 타겟 뷰를 지정된 색상으로 초기화합니다.
 	const float color[] = { red,green,blue,1.0f }; // RGBA 순서
-	pContext->ClearRenderTargetView(pTarget, color);
+	pContext->ClearRenderTargetView(pTarget.Get(), color);
 }
 
 
