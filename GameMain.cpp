@@ -20,7 +20,7 @@ void SetupConsole()
     //    따라서 함수 내의 로컬 변수 pConsole은 임시 정보를 받는 역할일 뿐이며, 함수 종료 후 사라져도 stdout에 적용된 변경은 계속 유지됩니다.    
 }
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
     // 콘솔 설정
     SetupConsole();
@@ -47,6 +47,7 @@ ZApp::ZApp(const TCHAR* pszCaption,
 	DWORD XPos, DWORD YPos, DWORD Width, DWORD Height)
 	: ZApplication(XPos, YPos, Width, Height)
 {
+	m_pGraphics = nullptr;
 	_tcscpy_s(m_Caption, pszCaption);
 }
 
