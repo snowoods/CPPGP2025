@@ -39,9 +39,6 @@
     <ClCompile Include="ZVector4.cpp">
       <Filter>ZD3D11</Filter>
     </ClCompile>
-    <ClCompile Include="ZGraphicsResource.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ChiliException.cpp">
       <Filter>Exception</Filter>
     </ClCompile>
@@ -50,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="DxgiInfoManager.cpp">
       <Filter>Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="ZGraphicsResource.cpp">
+      <Filter>ZD3D11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -80,9 +80,6 @@
     <ClInclude Include="ZVector4.h">
       <Filter>ZD3D11</Filter>
     </ClInclude>
-    <ClInclude Include="ZGraphicsResource.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="ChiliException.h">
       <Filter>Exception</Filter>
     </ClInclude>
@@ -103,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="WindowsThrowMacros.h">
       <Filter>Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="ZGraphicsResource.h">
+      <Filter>ZD3D11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
