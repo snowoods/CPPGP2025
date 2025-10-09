@@ -1,4 +1,4 @@
-﻿#include "GameGlobal.h"
+#include "GameGlobal.h"
 #include <mmsystem.h> // timeGetTime()
 #pragma comment(lib, "winmm.lib")
 
@@ -29,8 +29,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	// 화면 중앙 위치 계산
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-	const int windowWidth = 800;
-	const int windowHeight = 600;
+	const int clientWidth = 800;
+	const int clientHeight = 600;
+
+	RECT windowRect = { 0, 0, clientWidth, clientHeight };
+	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+
+	int windowWidth = windowRect.right - windowRect.left;
+	int windowHeight = windowRect.bottom - windowRect.top;
+
 	int x = (screenWidth - windowWidth) / 2;
 	int y = (screenHeight - windowHeight) / 2;
 
