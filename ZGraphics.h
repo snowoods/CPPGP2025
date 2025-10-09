@@ -75,4 +75,5 @@ public:
 	void ClearBuffer(float red, float green, float blue) noexcept;
 
 	void DrawTestTriangle();
+    void DrawIndexedTriangle();
 };

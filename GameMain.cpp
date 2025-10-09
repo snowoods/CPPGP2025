@@ -1,4 +1,4 @@
-#include "GameGlobal.h"
+﻿#include "GameGlobal.h"
 #include <mmsystem.h> // timeGetTime()
 #pragma comment(lib, "winmm.lib")
 
@@ -107,7 +107,8 @@ BOOL ZApp::Frame()
 	// Red와 Green 채널이 'c' 값에 따라 변하므로, 배경색이 파란색(0,0,1)과 청록색(1,1,1) 사이를 오가게 됩니다.
 	m_pGraphics->ClearBuffer(c, c, 1.0f);
 
-	m_pGraphics->DrawTestTriangle();
+	//m_pGraphics->DrawTestTriangle();
+    m_pGraphics->DrawIndexedTriangle();
 
 	// 렌더링된 후면 버퍼를 화면에 표시합니다.
 	m_pGraphics->EndFrame();
