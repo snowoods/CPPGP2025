@@ -17,6 +17,7 @@ private:
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;
 #endif
+    float winRatio;
 
 public:
 	class Exception : public ChiliException
@@ -57,7 +58,7 @@ public:
 	};
 
 public:
-	ZGraphics(HWND hWnd);
+	ZGraphics(HWND hWnd, float winRatio);
 
 	// 복사 생성자와 대입 연산자를 사용하지 않는다. (객체 복사 방지)
 	// -- D3D 리소스 고유하게 유지
@@ -76,4 +77,5 @@ public:
 
 	void DrawTestTriangle();
     void DrawIndexedTriangle();
+    void DrawConstantBuffer(float angle);
 };

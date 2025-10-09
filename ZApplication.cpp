@@ -1,7 +1,7 @@
 ﻿#include "ZD3D11.h"
 
 
-ZApplication::ZApplication(DWORD XPos, DWORD YPos, DWORD Width, DWORD Height)
+ZApplication::ZApplication(DWORD XPos, DWORD YPos, DWORD Width, DWORD Height, DWORD ClientWidth, DWORD ClientHeight)
 {
 	m_hWnd = NULL;
 
@@ -22,6 +22,8 @@ ZApplication::ZApplication(DWORD XPos, DWORD YPos, DWORD Width, DWORD Height)
 	m_YPos = YPos;
 	m_Width = Width;
 	m_Height = Height;
+    m_ClientWidth = ClientWidth;
+    m_ClientHeight = ClientHeight;
 
 	// Set default WNDCLASSEX structure
 	m_wcex.cbSize = sizeof(WNDCLASSEX);

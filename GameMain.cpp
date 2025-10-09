@@ -26,9 +26,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     SetupConsole();
     std::cout << "Console window is ready for logging!" << std::endl;
 
-	// 화면 중앙 위치 계산
-	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	// 클라이언트 영역 크기
 	const int clientWidth = 800;
 	const int clientHeight = 600;
 
@@ -38,10 +36,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int windowWidth = windowRect.right - windowRect.left;
 	int windowHeight = windowRect.bottom - windowRect.top;
 
+	std::cout << "windowRect: " << windowWidth << " " << windowHeight << std::endl;
+
+	// 화면 중앙 위치 계산
+	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
 	int x = (screenWidth - windowWidth) / 2;
 	int y = (screenHeight - windowHeight) / 2;
 
-	ZApp Game(_T("My D3D Test"), x, y, windowWidth, windowHeight);
+	ZApp Game(_T("My D3D Test"), x, y, windowWidth, windowHeight, clientWidth, clientHeight);
 	BOOL result = Game.Run();
 	
 	// 프로그램 종료 전 콘솔 해제
@@ -53,8 +57,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 //------------------------------------------------------------------------------
 
 ZApp::ZApp(const TCHAR* pszCaption,
-	DWORD XPos, DWORD YPos, DWORD Width, DWORD Height)
-	: ZApplication(XPos, YPos, Width, Height)
+	DWORD XPos, DWORD YPos, DWORD Width, DWORD Height, DWORD ClientWidth, DWORD ClientHeight)
+	: ZApplication(XPos, YPos, Width, Height, ClientWidth, ClientHeight)
 {
 	m_pGraphics = nullptr;
 	_tcscpy_s(m_Caption, pszCaption);
@@ -75,6 +79,16 @@ DWORD ZApp::GetHeight()
 	return m_Height;
 }
 
+DWORD ZApp::GetClientWidth()
+{
+    return m_ClientWidth;
+}
+
+DWORD ZApp::GetClientHeight()
+{
+    return m_ClientHeight;
+}
+
 LRESULT CALLBACK ZApp::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	return ZApplication::MsgProc(hWnd, uMsg, wParam, lParam);
@@ -87,7 +101,10 @@ BOOL ZApp::Shutdown()
 
 BOOL ZApp::Init()
 {
-	m_pGraphics = new ZGraphics(GetHWnd());
+	std::cout << "Window client size: " << m_ClientWidth << "x" << m_ClientHeight << std::endl;
+    std::cout << (float)m_ClientHeight / (float)m_ClientWidth << std::endl;
+
+	m_pGraphics = new ZGraphics(GetHWnd(), (float)m_ClientHeight/ (float)m_ClientWidth);
 
 	ShowMouse(TRUE);
 
@@ -108,7 +125,8 @@ BOOL ZApp::Frame()
 	m_pGraphics->ClearBuffer(c, c, 1.0f);
 
 	//m_pGraphics->DrawTestTriangle();
-    m_pGraphics->DrawIndexedTriangle();
+    //m_pGraphics->DrawIndexedTriangle();
+    m_pGraphics->DrawConstantBuffer((float)dValue);
 
 	// 렌더링된 후면 버퍼를 화면에 표시합니다.
 	m_pGraphics->EndFrame();
