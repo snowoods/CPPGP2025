@@ -19,6 +19,9 @@
     <Filter Include="Exception">
       <UniqueIdentifier>{7e0edee4-a741-4323-a9dc-943586fc27bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{19eb4e82-2ff2-483c-89d2-6c6be3348ac0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ZApplication.cpp">
@@ -115,5 +118,13 @@
     <None Include="DXTrace.inl">
       <Filter>Exception</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="VertexShader.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShader.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

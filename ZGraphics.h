@@ -74,4 +74,5 @@ public:
 	// blue (0.0f ~ 1.0f)
 	void ClearBuffer(float red, float green, float blue) noexcept;
 
+	void DrawTestTriangle();
 };

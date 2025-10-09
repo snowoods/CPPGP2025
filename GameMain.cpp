@@ -43,6 +43,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	return result;
 }
 
+//------------------------------------------------------------------------------
+
 ZApp::ZApp(const TCHAR* pszCaption,
 	DWORD XPos, DWORD YPos, DWORD Width, DWORD Height)
 	: ZApplication(XPos, YPos, Width, Height)
@@ -97,6 +99,9 @@ BOOL ZApp::Frame()
 	// 계산된 'c' 값을 사용하여 화면 배경색을 동적으로 변경합니다.
 	// Red와 Green 채널이 'c' 값에 따라 변하므로, 배경색이 파란색(0,0,1)과 청록색(1,1,1) 사이를 오가게 됩니다.
 	m_pGraphics->ClearBuffer(c, c, 1.0f);
+
+	m_pGraphics->DrawTestTriangle();
+
 	// 렌더링된 후면 버퍼를 화면에 표시합니다.
 	m_pGraphics->EndFrame();
 	return TRUE;
