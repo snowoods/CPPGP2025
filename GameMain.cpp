@@ -27,7 +27,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     std::cout << "Console window is ready for logging!" << std::endl;
 
 	// 클라이언트 영역 크기
-	const int clientWidth = 800;
+	const int clientWidth = 1024;
 	const int clientHeight = 600;
 
 	RECT windowRect = { 0, 0, clientWidth, clientHeight };
@@ -104,7 +104,7 @@ BOOL ZApp::Init()
 	std::cout << "Window client size: " << m_ClientWidth << "x" << m_ClientHeight << std::endl;
     std::cout << (float)m_ClientHeight / (float)m_ClientWidth << std::endl;
 
-	m_pGraphics = new ZGraphics(GetHWnd(), (float)m_ClientHeight/ (float)m_ClientWidth);
+	m_pGraphics = new ZGraphics(GetHWnd(), (float)m_ClientHeight/ (float)m_ClientWidth, m_ClientWidth, m_ClientHeight);
 
 	ShowMouse(TRUE);
 
@@ -126,7 +126,21 @@ BOOL ZApp::Frame()
 
 	//m_pGraphics->DrawTestTriangle();
     //m_pGraphics->DrawIndexedTriangle();
-    m_pGraphics->DrawConstantBuffer((float)dValue);
+    //m_pGraphics->DrawConstantBuffer((float)dValue);
+
+	// 윈도우 내에서 현재 마우스 위치
+	RECT rect;
+	GetWindowRect(GetHWnd(), &rect);
+	POINT pt;
+	GetCursorPos(&pt);
+	pt.x -= rect.left;
+	pt.y -= rect.top;
+	//std::cout << pt.x << " " << pt.y << std::endl;
+    m_pGraphics->DrawConstantBufferWithDXMath(
+        (float)dValue,
+        ((float)pt.x / ((float)m_ClientWidth / 2.0f)) - 1.0f,
+        (-(float)pt.y / ((float)m_ClientHeight / 2.0f)) + 1.0f
+    );
 
 	// 렌더링된 후면 버퍼를 화면에 표시합니다.
 	m_pGraphics->EndFrame();

@@ -18,6 +18,8 @@ private:
 	DxgiInfoManager infoManager;
 #endif
     float winRatio;
+    DWORD m_ClientWidth;
+    DWORD m_ClientHeight;
 
 public:
 	class Exception : public ChiliException
@@ -58,7 +60,7 @@ public:
 	};
 
 public:
-	ZGraphics(HWND hWnd, float winRatio);
+	ZGraphics(HWND hWnd, float winRatio, DWORD width, DWORD height);
 
 	// 복사 생성자와 대입 연산자를 사용하지 않는다. (객체 복사 방지)
 	// -- D3D 리소스 고유하게 유지
@@ -78,4 +80,5 @@ public:
 	void DrawTestTriangle();
     void DrawIndexedTriangle();
     void DrawConstantBuffer(float angle);
+    void DrawConstantBufferWithDXMath(float angle, float x, float y);
 };

@@ -2,15 +2,19 @@
 #include <sstream>
 #include "GraphicsThrowMacros.h"
 #include <d3dcompiler.h>
+#include <DirectXMath.h> // dx math
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib") // Shader Compiler
 
 namespace wrl = Microsoft::WRL;
+namespace dx = DirectX;
 
-ZGraphics::ZGraphics(HWND hWnd, float winRatio)
+ZGraphics::ZGraphics(HWND hWnd, float winRatio, DWORD width, DWORD height)
 {
     this->winRatio = winRatio;
+    this->m_ClientWidth = width;
+    this->m_ClientHeight = height;
 
 	// 스왑 체인을 설정하기 위한 구조체입니다.
 	DXGI_SWAP_CHAIN_DESC sd = {};
@@ -292,8 +296,8 @@ void ZGraphics::DrawTestTriangle()
 
     // configure viewport
     D3D11_VIEWPORT vp;
-    vp.Width = 800;
-    vp.Height = 600;
+    vp.Width = m_ClientWidth;
+    vp.Height = m_ClientHeight;
     vp.MinDepth = 0;
     vp.MaxDepth = 1;
     vp.TopLeftX = 0;
@@ -430,8 +434,10 @@ void ZGraphics::DrawIndexedTriangle()
 
     // configure viewport
     D3D11_VIEWPORT vp;
-    vp.Width = 800 / 2;
-    vp.Height = 600 / 2;
+    //vp.Width = 800 / 2;
+    //vp.Height = 600 / 2;
+    vp.Width = m_ClientWidth;
+    vp.Height = m_ClientHeight;
     vp.MinDepth = 0;
     vp.MaxDepth = 1;
     vp.TopLeftX = 400;
@@ -604,8 +610,190 @@ void ZGraphics::DrawConstantBuffer(float angle)
 
     // configure viewport
     D3D11_VIEWPORT vp;
-    vp.Width = 800;
-    vp.Height = 600;
+    vp.Width = m_ClientWidth;
+    vp.Height = m_ClientHeight;
+    vp.MinDepth = 0;
+    vp.MaxDepth = 1;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    pContext->RSSetViewports(1u, &vp);
+
+    GFX_THROW_INFO_ONLY(pContext->DrawIndexed((UINT)std::size(indices), 0u, 0u));
+}
+
+void ZGraphics::DrawConstantBufferWithDXMath(float angle, float x, float y)
+{
+    // XMVECTOR 테스트
+    dx::XMVECTOR v = dx::XMVectorSet(3.0f, 3.0f, 0.0f, 0.0f);
+    auto result = dx::XMVector3Transform(v, dx::XMMatrixScaling(1.5f, 1.0f, 1.0f));
+    auto xx = dx::XMVectorGetX(result);
+    auto yy = dx::XMVectorGetY(result);
+    auto zz = dx::XMVectorGetZ(result);
+    //std::cout << xx << " " << yy << " " << zz << std::endl;
+
+
+    HRESULT hr;
+
+    struct Vertex
+    {
+        struct
+        {
+            float x;
+            float y;
+        } pos;
+        struct
+        {
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+            uint8_t a;
+        } color;
+    };
+
+    // NDC
+    // 화면 가운데가 (0,0), X(-1 ~ 1), Y(-1 ~ 1)
+    // create vertex buffer (1 2d triangle at center of screen)
+    // 왼손좌표계 앞면 : CW (Clock Wise)
+    Vertex vertices[] =
+    {
+        { 0.0f, 0.5f, 255, 0, 0, 0 },
+        { 0.5f, -0.5f, 0, 255, 0, 0 },
+        { -0.5f, -0.5f, 0, 0, 255, 0 },
+        //{ -0.3f, 0.3f, 0, 255, 0, 0 },
+        //{ 0.3f, 0.3f, 0, 0, 255, 0 },
+        //{ 0.0f, -0.8f, 255, 0, 0, 0 },
+    };
+
+    wrl::ComPtr<ID3D11Buffer> pVertexBuffer;
+    D3D11_BUFFER_DESC bd = {};
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.CPUAccessFlags = 0u;
+    bd.MiscFlags = 0u;
+    bd.ByteWidth = sizeof(vertices);
+    bd.StructureByteStride = sizeof(Vertex);
+
+    D3D11_SUBRESOURCE_DATA sd = {};
+    sd.pSysMem = vertices;
+    GFX_THROW_INFO(pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
+
+    // Bind vertex buffer to pipeline
+    const UINT stride = sizeof(Vertex);
+    const UINT offset = 0u;
+    pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
+
+
+    // create index buffer
+    const uint16_t indices[] =
+    {
+        0, 1, 2,
+        //0, 2, 3,
+        //0, 4, 1,
+        //2, 1, 5,
+    };
+
+    wrl::ComPtr<ID3D11Buffer> pIndexBuffer;
+    D3D11_BUFFER_DESC ibd = {};
+    ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    ibd.Usage = D3D11_USAGE_DEFAULT;
+    ibd.CPUAccessFlags = 0u;
+    ibd.MiscFlags = 0u;
+    ibd.ByteWidth = sizeof(indices);
+    ibd.StructureByteStride = sizeof(uint16_t);
+    D3D11_SUBRESOURCE_DATA isd = {};
+    isd.pSysMem = indices;
+    GFX_THROW_INFO(pDevice->CreateBuffer(&ibd, &isd, &pIndexBuffer));
+
+    // bind index buffer
+    pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
+
+
+    // create constant buffer for transformation matrix
+    struct ConstantBuffer
+    {
+        dx::XMMATRIX transform; // apply simd
+    };
+    const ConstantBuffer cb =
+    {
+        {
+            // NDC(-1 ~ 1) : RST 변환
+            dx::XMMatrixTranspose(
+                dx::XMMatrixRotationZ(angle) * 
+                dx::XMMatrixScaling(winRatio, 1.0f, 1.0f) * 
+                dx::XMMatrixTranslation(x, y, 0)
+            )
+        }
+    };
+    wrl::ComPtr<ID3D11Buffer> pConstantBuffer;
+    D3D11_BUFFER_DESC cbd;
+    cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.Usage = D3D11_USAGE_DYNAMIC;
+    cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    cbd.MiscFlags = 0u;
+    cbd.ByteWidth = sizeof(cb);
+    cbd.StructureByteStride = 0u;
+
+    // GPU에 상수 버퍼를 전달하기 전에 Transpose 해야한다. (CPU : 벡터*매트릭스, GPU : 매트릭스*벡터)
+    // 여기서는 D3D 상태를 그대로 두고 VertexShader에서 row_major 키워드 사용한다.
+    D3D11_SUBRESOURCE_DATA csd = {};
+    csd.pSysMem = &cb;
+    GFX_THROW_INFO(pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer));
+
+    // bind constant buffer to vertex shader
+    pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf());
+
+
+    // create pixel shader
+    wrl::ComPtr<ID3D11PixelShader> pPixelShader;
+    wrl::ComPtr<ID3DBlob> pBlob;
+    GFX_THROW_INFO(D3DReadFileToBlob(L"./x64/Debug/PixelShader.cso", &pBlob));
+    GFX_THROW_INFO(pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
+
+    // bind pixel shader
+    pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
+
+
+    // create vertex shader
+    wrl::ComPtr<ID3D11VertexShader> pVertexShader;
+    GFX_THROW_INFO(D3DReadFileToBlob(L"./x64/Debug/VertexShaderColMajor.cso", &pBlob));
+    GFX_THROW_INFO(pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
+
+    // bind vertex shader
+    pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
+
+
+    // VertexShader의 바이트코드(pBlob)가 필요하기 때문에 PixelShader를 먼저 생성한다.
+    // input (vertex) layout (2d position only)
+    wrl::ComPtr<ID3D11InputLayout> pInputLayout;
+    const D3D11_INPUT_ELEMENT_DESC ied[] =
+    {
+        { "Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        //{ "Color", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+    GFX_THROW_INFO(pDevice->CreateInputLayout(
+        ied, (UINT)std::size(ied),
+        pBlob->GetBufferPointer(),
+        pBlob->GetBufferSize(),
+        &pInputLayout
+    ));
+
+    // bind vertex layout
+    pContext->IASetInputLayout(pInputLayout.Get());
+
+
+    // bind render target
+    pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), nullptr);
+
+    // Set primitive topology to triangle list (groups of 3 vertices)
+    pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    //pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST); // CW 영향 없음
+    //pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP); // CW 영향 없음
+
+    // configure viewport
+    D3D11_VIEWPORT vp;
+    vp.Width = m_ClientWidth;
+    vp.Height = m_ClientHeight;
     vp.MinDepth = 0;
     vp.MaxDepth = 1;
     vp.TopLeftX = 0;
