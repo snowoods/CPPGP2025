@@ -131,6 +131,41 @@ ZGraphics::ZGraphics(HWND hWnd, float winRatio, DWORD width, DWORD height)
 		nullptr,			// pDesc: 렌더 타겟 뷰 설정, NULL이면 리소스의 기본 설정을 따릅니다.
 		&pTarget			// ppRTView: 생성된 렌더 타겟 뷰를 받을 포인터입니다.
 	));
+
+    // create depth stensil state
+    D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+    dsDesc.DepthEnable = TRUE;
+    dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    dsDesc.DepthFunc = D3D11_COMPARISON_LESS; // z축으로 가까운 것이 다른 것을 오버라이드한다.
+    wrl::ComPtr<ID3D11DepthStencilState> pDSState;
+    GFX_THROW_INFO(pDevice->CreateDepthStencilState(&dsDesc, &pDSState));
+
+    // bind depth state
+    pContext->OMSetDepthStencilState(pDSState.Get(), 1u);
+
+    // create depth stensil texture
+    wrl::ComPtr<ID3D11Texture2D> pDepthStencil;
+    D3D11_TEXTURE2D_DESC descDepth = {};
+    descDepth.Width = (UINT)m_ClientWidth;
+    descDepth.Height = (UINT)m_ClientHeight;
+    descDepth.MipLevels = 1u;
+    descDepth.ArraySize = 1u;
+    descDepth.Format = DXGI_FORMAT_D32_FLOAT;
+    descDepth.SampleDesc.Count = 1u;
+    descDepth.SampleDesc.Quality = 0u;
+    descDepth.Usage = D3D11_USAGE_DEFAULT;
+    descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    GFX_THROW_INFO(pDevice->CreateTexture2D(&descDepth, nullptr, &pDepthStencil));
+
+    // create view of depth stensil texture
+    D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+    descDSV.Format = DXGI_FORMAT_D32_FLOAT;
+    descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    descDSV.Texture2D.MipSlice = 0u;
+    GFX_THROW_INFO(pDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, &pDSV));
+
+    // bind depth stensil view to OM
+    pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), pDSV.Get());
 }
 
 void ZGraphics::EndFrame()
@@ -162,6 +197,7 @@ void ZGraphics::ClearBuffer(float red, float green, float blue) noexcept
 	// 렌더 타겟 뷰를 지정된 색상으로 초기화합니다.
 	const float color[] = { red,green,blue,1.0f }; // RGBA 순서
 	pContext->ClearRenderTargetView(pTarget.Get(), color);
+    pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
 
 void ZGraphics::DrawTestTriangle()
@@ -791,8 +827,8 @@ void ZGraphics::DrawConstantBufferWithDXMath(float angle, float x, float y)
 
     // configure viewport
     D3D11_VIEWPORT vp;
-    vp.Width = m_ClientWidth;
-    vp.Height = m_ClientHeight;
+    vp.Width = (float)m_ClientWidth;
+    vp.Height = (float)m_ClientHeight;
     vp.MinDepth = 0;
     vp.MaxDepth = 1;
     vp.TopLeftX = 0;
@@ -971,8 +1007,217 @@ void ZGraphics::DrawCube(float angle, float x, float y)
 
     // configure viewport
     D3D11_VIEWPORT vp;
-    vp.Width = m_ClientWidth;
-    vp.Height = m_ClientHeight;
+    vp.Width = (float)m_ClientWidth;
+    vp.Height = (float)m_ClientHeight;
+    vp.MinDepth = 0;
+    vp.MaxDepth = 1;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    pContext->RSSetViewports(1u, &vp);
+
+    GFX_THROW_INFO_ONLY(pContext->DrawIndexed((UINT)std::size(indices), 0u, 0u));
+}
+
+void ZGraphics::DrawCubeDepth(float angle, float x, float z)
+{
+    HRESULT hr;
+
+    struct Vertex
+    {
+        struct
+        {
+            float x;
+            float y;
+            float z;
+        } pos;
+    };
+
+    // NDC (Normalize Device Coordinate)
+    // 화면 가운데가 (0,0), X(-1 ~ 1), Y(-1 ~ 1) Z(-1 ~ 1)
+    // create vertex buffer (1 3d cube at center of screen)
+    // 왼손좌표계 앞면 : CW (Clock Wise)
+    Vertex vertices[] =
+    {
+        { -1.0f, -1.0f, -1.0f},
+        { 1.0f, -1.0f, -1.0f },
+        { -1.0f, 1.0f, -1.0f },
+        { 1.0f, 1.0f, -1.0f  },
+        { -1.0f, -1.0f, 1.0f },
+        { 1.0f, -1.0f, 1.0f },
+        { -1.0f, 1.0f, 1.0f },
+        { 1.0f, 1.0f, 1.0f },
+    };
+
+    wrl::ComPtr<ID3D11Buffer> pVertexBuffer;
+    D3D11_BUFFER_DESC bd = {};
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.CPUAccessFlags = 0u;
+    bd.MiscFlags = 0u;
+    bd.ByteWidth = sizeof(vertices);
+    bd.StructureByteStride = sizeof(Vertex);
+
+    D3D11_SUBRESOURCE_DATA sd = {};
+    sd.pSysMem = vertices;
+    GFX_THROW_INFO(pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
+
+    // Bind vertex buffer to pipeline
+    const UINT stride = sizeof(Vertex);
+    const UINT offset = 0u;
+    pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
+
+
+    // create index buffer
+    const uint16_t indices[] =
+    {
+        0, 2, 1,  2, 3, 1,
+        1, 3, 5,  3, 7, 5,
+        2, 6, 3,  3, 6, 7,
+        4, 5, 7,  4, 7, 6,
+        0, 4, 2,  2, 4, 6,
+        0, 1, 4,  1, 5, 4,
+    };
+
+    wrl::ComPtr<ID3D11Buffer> pIndexBuffer;
+    D3D11_BUFFER_DESC ibd = {};
+    ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    ibd.Usage = D3D11_USAGE_DEFAULT;
+    ibd.CPUAccessFlags = 0u;
+    ibd.MiscFlags = 0u;
+    ibd.ByteWidth = sizeof(indices);
+    ibd.StructureByteStride = sizeof(uint16_t);
+    D3D11_SUBRESOURCE_DATA isd = {};
+    isd.pSysMem = indices;
+    GFX_THROW_INFO(pDevice->CreateBuffer(&ibd, &isd, &pIndexBuffer));
+
+    // bind index buffer
+    pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
+
+
+    // create constant buffer for transformation matrix
+    struct ConstantBuffer
+    {
+        dx::XMMATRIX transform; // apply simd
+    };
+    const ConstantBuffer cb =
+    {
+        {
+            // NDC(-1 ~ 1) : RST 변환
+            dx::XMMatrixTranspose(
+                dx::XMMatrixRotationZ(angle) *
+                dx::XMMatrixRotationY(angle) *
+                // dx::XMMatrixScaling(winRatio, 1.0f, 1.0f) * // no need ratio adjustment
+                dx::XMMatrixTranslation(x, 0.0f, z + 4.0f) *
+                dx::XMMatrixPerspectiveLH(1.0f, winRatio, 0.5f, 10.0f)
+            )
+        }
+    };
+    wrl::ComPtr<ID3D11Buffer> pConstantBuffer;
+    D3D11_BUFFER_DESC cbd;
+    cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.Usage = D3D11_USAGE_DYNAMIC;
+    cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    cbd.MiscFlags = 0u;
+    cbd.ByteWidth = sizeof(cb);
+    cbd.StructureByteStride = 0u;
+
+    // GPU에 상수 버퍼를 전달하기 전에 Transpose 해야한다. (CPU : 벡터*매트릭스, GPU : 매트릭스*벡터)
+    // 여기서는 D3D 상태를 그대로 두고 VertexShader에서 row_major 키워드 사용한다.
+    D3D11_SUBRESOURCE_DATA csd = {};
+    csd.pSysMem = &cb;
+    GFX_THROW_INFO(pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer));
+
+    // bind constant buffer to vertex shader
+    pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf());
+
+
+    // 각 삼각형의 꼭지점 컬러는 다르다. 개별 값을 가져오기 위해 constant buffer 추가
+    struct ConstantBuffer2
+    {
+        struct
+        {
+            float r;
+            float g;
+            float b;
+            float a;
+        } face_colors[6];
+    };
+    const ConstantBuffer2 cb2 =
+    {
+        {
+            {1.0f, 0.0f, 1.0f},
+            {1.0f, 0.0f, 0.0f},
+            {0.0f, 1.0f, 0.0f},
+            {0.0f, 0.0f, 1.0f},
+            {1.0f, 1.0f, 0.0f},
+            {0.0f, 1.0f, 1.0f},
+        }
+    };
+    wrl::ComPtr<ID3D11Buffer> pConstantBuffer2;
+    D3D11_BUFFER_DESC cbd2;
+    cbd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd2.Usage = D3D11_USAGE_DEFAULT;
+    cbd2.CPUAccessFlags = 0u;
+    cbd2.MiscFlags = 0u;
+    cbd2.ByteWidth = sizeof(cb2);
+    cbd2.StructureByteStride = 0u;
+    D3D11_SUBRESOURCE_DATA csd2 = {};
+    csd2.pSysMem = &cb2;
+    GFX_THROW_INFO(pDevice->CreateBuffer(&cbd2, &csd2, &pConstantBuffer2));
+
+    // bind constant buffer to pixel shader
+    pContext->PSSetConstantBuffers(0u, 1u, pConstantBuffer2.GetAddressOf());
+
+
+    // create pixel shader
+    wrl::ComPtr<ID3D11PixelShader> pPixelShader;
+    wrl::ComPtr<ID3DBlob> pBlob;
+    GFX_THROW_INFO(D3DReadFileToBlob(L"./x64/Debug/PixelShaderCubeDepth.cso", &pBlob));
+    GFX_THROW_INFO(pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
+
+    // bind pixel shader
+    pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
+
+
+    // create vertex shader
+    wrl::ComPtr<ID3D11VertexShader> pVertexShader;
+    GFX_THROW_INFO(D3DReadFileToBlob(L"./x64/Debug/VertexShaderCubeDepth.cso", &pBlob));
+    GFX_THROW_INFO(pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
+
+    // bind vertex shader
+    pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
+
+
+    // VertexShader의 바이트코드(pBlob)가 필요하기 때문에 PixelShader를 먼저 생성한다.
+    // input (vertex) layout (2d position only)
+    wrl::ComPtr<ID3D11InputLayout> pInputLayout;
+    const D3D11_INPUT_ELEMENT_DESC ied[] =
+    {
+        { "Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+    GFX_THROW_INFO(pDevice->CreateInputLayout(
+        ied, (UINT)std::size(ied),
+        pBlob->GetBufferPointer(),
+        pBlob->GetBufferSize(),
+        &pInputLayout
+    ));
+
+    // bind vertex layout
+    pContext->IASetInputLayout(pInputLayout.Get());
+
+
+    // bind render target
+    //pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), nullptr); // ZGraphics 생성자에서 DepthStensil 초기화 했다. 여기서 주석
+
+    // Set primitive topology to triangle list (groups of 3 vertices)
+    pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    //pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST); // CW 영향 없음
+    //pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP); // CW 영향 없음
+
+    // configure viewport
+    D3D11_VIEWPORT vp;
+    vp.Width = (float)m_ClientWidth;
+    vp.Height = (float)m_ClientHeight;
     vp.MinDepth = 0;
     vp.MaxDepth = 1;
     vp.TopLeftX = 0;

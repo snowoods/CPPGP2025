@@ -14,6 +14,7 @@ private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwap;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pTarget;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;
 #endif
@@ -85,4 +86,5 @@ public:
 
     // 3D
     void DrawCube(float angle, float x, float y);
+    void DrawCubeDepth(float angle, float x, float y); // using face color
 };

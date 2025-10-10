@@ -124,6 +124,8 @@ BOOL ZApp::Frame()
 	// Red와 Green 채널이 'c' 값에 따라 변하므로, 배경색이 파란색(0,0,1)과 청록색(1,1,1) 사이를 오가게 됩니다.
 	m_pGraphics->ClearBuffer(c, c, 1.0f);
 
+
+
 	//m_pGraphics->DrawTestTriangle();
     //m_pGraphics->DrawIndexedTriangle();
     //m_pGraphics->DrawConstantBuffer((float)dValue);
@@ -142,11 +144,24 @@ BOOL ZApp::Frame()
     //    (-(float)pt.y / ((float)m_ClientHeight / 2.0f)) + 1.0f
     //);
 
-    m_pGraphics->DrawCube(
+    //m_pGraphics->DrawCube(
+    //    (float)dValue,
+    //    ((float)pt.x / ((float)m_ClientWidth / 2.0f)) - 1.0f,
+    //    (-(float)pt.y / ((float)m_ClientHeight / 2.0f)) + 1.0f
+    //);
+
+    m_pGraphics->DrawCubeDepth(
+        -(float)dValue,
+        0.0f,
+        0.0f
+    );
+    m_pGraphics->DrawCubeDepth(
         (float)dValue,
         ((float)pt.x / ((float)m_ClientWidth / 2.0f)) - 1.0f,
         (-(float)pt.y / ((float)m_ClientHeight / 2.0f)) + 1.0f
     );
+
+
 
 	// 렌더링된 후면 버퍼를 화면에 표시합니다.
 	m_pGraphics->EndFrame();
