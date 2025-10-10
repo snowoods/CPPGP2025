@@ -136,7 +136,13 @@ BOOL ZApp::Frame()
 	pt.x -= rect.left;
 	pt.y -= rect.top;
 	//std::cout << pt.x << " " << pt.y << std::endl;
-    m_pGraphics->DrawConstantBufferWithDXMath(
+    //m_pGraphics->DrawConstantBufferWithDXMath(
+    //    (float)dValue,
+    //    ((float)pt.x / ((float)m_ClientWidth / 2.0f)) - 1.0f,
+    //    (-(float)pt.y / ((float)m_ClientHeight / 2.0f)) + 1.0f
+    //);
+
+    m_pGraphics->DrawCube(
         (float)dValue,
         ((float)pt.x / ((float)m_ClientWidth / 2.0f)) - 1.0f,
         (-(float)pt.y / ((float)m_ClientHeight / 2.0f)) + 1.0f

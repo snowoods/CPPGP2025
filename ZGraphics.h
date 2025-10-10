@@ -77,8 +77,12 @@ public:
 	// blue (0.0f ~ 1.0f)
 	void ClearBuffer(float red, float green, float blue) noexcept;
 
+    // Basic
 	void DrawTestTriangle();
     void DrawIndexedTriangle();
     void DrawConstantBuffer(float angle);
     void DrawConstantBufferWithDXMath(float angle, float x, float y);
+
+    // 3D
+    void DrawCube(float angle, float x, float y);
 };

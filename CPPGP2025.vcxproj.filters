@@ -129,5 +129,8 @@
     <FxCompile Include="VertexShaderColMajor.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="VertexShaderCube.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
