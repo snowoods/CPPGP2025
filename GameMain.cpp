@@ -126,17 +126,17 @@ BOOL ZApp::Frame()
 
 
 
-	//m_pGraphics->DrawTestTriangle();
+	m_pGraphics->DrawTestTriangle();
     //m_pGraphics->DrawIndexedTriangle();
     //m_pGraphics->DrawConstantBuffer((float)dValue);
 
-	// 윈도우 내에서 현재 마우스 위치
-	RECT rect;
-	GetWindowRect(GetHWnd(), &rect);
-	POINT pt;
-	GetCursorPos(&pt);
-	pt.x -= rect.left;
-	pt.y -= rect.top;
+	//// 윈도우 내에서 현재 마우스 위치
+	//RECT rect;
+	//GetWindowRect(GetHWnd(), &rect);
+	//POINT pt;
+	//GetCursorPos(&pt);
+	//pt.x -= rect.left;
+	//pt.y -= rect.top;
 	//std::cout << pt.x << " " << pt.y << std::endl;
     //m_pGraphics->DrawConstantBufferWithDXMath(
     //    (float)dValue,
@@ -150,16 +150,18 @@ BOOL ZApp::Frame()
     //    (-(float)pt.y / ((float)m_ClientHeight / 2.0f)) + 1.0f
     //);
 
-    m_pGraphics->DrawCubeDepth(
-        -(float)dValue,
-        0.0f,
-        0.0f
-    );
-    m_pGraphics->DrawCubeDepth(
-        (float)dValue,
-        ((float)pt.x / ((float)m_ClientWidth / 2.0f)) - 1.0f,
-        (-(float)pt.y / ((float)m_ClientHeight / 2.0f)) + 1.0f
-    );
+
+    //m_pGraphics->DrawCubeDepth(
+    //    -(float)dValue,
+    //    0.0f,
+    //    0.0f
+    //);
+
+    //m_pGraphics->DrawCubeDepth(
+    //    (float)dValue,
+    //    ((float)pt.x / ((float)m_ClientWidth / 2.0f)) - 1.0f,
+    //    (-(float)pt.y / ((float)m_ClientHeight / 2.0f)) + 1.0f
+    //);
 
 
 

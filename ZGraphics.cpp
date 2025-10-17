@@ -132,6 +132,8 @@ ZGraphics::ZGraphics(HWND hWnd, float winRatio, DWORD width, DWORD height)
 		&pTarget			// ppRTView: 생성된 렌더 타겟 뷰를 받을 포인터입니다.
 	));
 
+
+    // depth 버퍼 초기화 할 때 사용한다.
     // create depth stensil state
     D3D11_DEPTH_STENCIL_DESC dsDesc = {};
     dsDesc.DepthEnable = TRUE;
@@ -195,9 +197,9 @@ void ZGraphics::EndFrame()
 void ZGraphics::ClearBuffer(float red, float green, float blue) noexcept
 {
 	// 렌더 타겟 뷰를 지정된 색상으로 초기화합니다.
-	const float color[] = { red,green,blue,1.0f }; // RGBA 순서
+	const float color[] = { red, green, blue, 1.0f }; // RGBA 순서
 	pContext->ClearRenderTargetView(pTarget.Get(), color);
-    pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+    //pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
 
 void ZGraphics::DrawTestTriangle()
@@ -211,57 +213,57 @@ void ZGraphics::DrawTestTriangle()
 		    float x;
 		    float y;
         } pos;
-        struct
-        {
-            //float r;
-            //float g;
-            //float b;
-            uint8_t r;
-            uint8_t g;
-            uint8_t b;
-            uint8_t a;
-        } color;
+        //struct
+        //{
+        //    //float r;
+        //    //float g;
+        //    //float b;
+        //    uint8_t r;
+        //    uint8_t g;
+        //    uint8_t b;
+        //    uint8_t a;
+        //} color;
 	};
 
     // NDC
     // 화면 가운데가 (0,0), X(-1 ~ 1), Y(-1 ~ 1)
 	// create vertex buffer (1 2d triangle at center of screen)
     // 왼손좌표계 앞면 : CW (Clock Wise)
-	//Vertex vertices[] =
-	//{
-	//	{ 0.0f, 0.5f, 255, 0, 0, 0 },
-	//	{ 0.5f, -0.5f, 0, 255, 0, 0 },
-	//	{ -0.5f, -0.5f, 0, 0, 255, 0 },
+	Vertex vertices[] =
+	{
+		//{ 0.0f, 0.5f, 255, 0, 0, 0 },
+		//{ 0.5f, -0.5f, 0, 255, 0, 0 },
+		//{ -0.5f, -0.5f, 0, 0, 255, 0 },
 
- //       // 2d float3
- //       //{ 0.0f, 0.5f, 1.0f, 0.0f, 0.0f },
- //       //{ 0.5f, -0.5f, 0.0f, 1.0f, 0.0f },
- //       //{ -0.5f, -0.5f, 0.0f, 0.0f, 1.0f },
+        // 2d float3
+        //{ 0.0f, 0.5f, 1.0f, 0.0f, 0.0f },
+        //{ 0.5f, -0.5f, 0.0f, 1.0f, 0.0f },
+        //{ -0.5f, -0.5f, 0.0f, 0.0f, 1.0f },
 
- //       // 2d
- //       //{ 0.5f, 1.0f },
- //       //{ 1.0f, 0.5f },
- //       //{ 0.5f, 0.5f },
-	//};
+        // 2d
+        { 0.0f, 0.5f },
+        { 0.5f, -0.5f },
+        { -0.5f, -0.5f },
+	};
 
-    Vertex vertices[] =
-    {
-        { 0.0f, 0.5f, 255, 0, 0, 0 },
-        { 0.5f, -0.5f, 0, 255, 0, 0 },
-        { -0.5f, -0.5f, 0, 0, 255, 0 },
+    //Vertex vertices[] =
+    //{
+    //    { 0.0f, 0.5f, 255, 0, 0, 0 },
+    //    { 0.5f, -0.5f, 0, 255, 0, 0 },
+    //    { -0.5f, -0.5f, 0, 0, 255, 0 },
 
-        { 0.0f, 0.5f, 255, 0, 0, 0 },
-        { -0.5f, -0.5f, 0, 0, 255, 0 },
-        { -0.3f, 0.3f, 0, 255, 0, 0 },
+    //    { 0.0f, 0.5f, 255, 0, 0, 0 },
+    //    { -0.5f, -0.5f, 0, 0, 255, 0 },
+    //    { -0.3f, 0.3f, 0, 255, 0, 0 },
 
-        { 0.0f, 0.5f, 255, 0, 0, 0 },
-        { 0.3f, 0.3f, 0, 0, 255, 0 },
-        { 0.5f, -0.5f, 0, 255, 0, 0 },
+    //    { 0.0f, 0.5f, 255, 0, 0, 0 },
+    //    { 0.3f, 0.3f, 0, 0, 255, 0 },
+    //    { 0.5f, -0.5f, 0, 255, 0, 0 },
 
-        { 0.0f, -0.8f, 255, 0, 0, 0 },
-        { -0.5f, -0.5f, 0, 0, 255, 0 },
-        { 0.5f, -0.5f, 0, 255, 0, 0 },
-    };
+    //    { 0.0f, -0.8f, 255, 0, 0, 0 },
+    //    { -0.5f, -0.5f, 0, 0, 255, 0 },
+    //    { 0.5f, -0.5f, 0, 255, 0, 0 },
+    //};
 
     //vertices[0].color.g = 255;
 
@@ -309,7 +311,7 @@ void ZGraphics::DrawTestTriangle()
     {
         { "Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         //{ "Color", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        //{ "Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
     GFX_THROW_INFO(pDevice->CreateInputLayout(
         ied, (UINT)std::size(ied),
@@ -472,8 +474,8 @@ void ZGraphics::DrawIndexedTriangle()
     D3D11_VIEWPORT vp;
     //vp.Width = 800 / 2;
     //vp.Height = 600 / 2;
-    vp.Width = (float)m_ClientWidth;
-    vp.Height = (float)m_ClientHeight;
+    vp.Width = (float)m_ClientWidth / 2.0f;
+    vp.Height = (float)m_ClientHeight / 2.0f;
     vp.MinDepth = 0;
     vp.MaxDepth = 1;
     vp.TopLeftX = 400;
@@ -609,7 +611,7 @@ void ZGraphics::DrawConstantBuffer(float angle)
 
     // create vertex shader
     wrl::ComPtr<ID3D11VertexShader> pVertexShader;
-    GFX_THROW_INFO(D3DReadFileToBlob(L"./x64/Debug/VertexShader.cso", &pBlob));
+    GFX_THROW_INFO(D3DReadFileToBlob(L"./x64/Debug/VertexShaderConst.cso", &pBlob));
     GFX_THROW_INFO(pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
 
     // bind vertex shader

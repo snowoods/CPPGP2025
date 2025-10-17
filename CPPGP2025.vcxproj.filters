@@ -138,5 +138,11 @@
     <FxCompile Include="VertexShaderCubeDepth.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="PixelShaderEx.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShaderConst.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
