@@ -22,6 +22,9 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{935fc7f8-1589-4029-bbb9-df281dddd22a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Binderable">
+      <UniqueIdentifier>{6f965ad7-347c-48a1-ae56-5a08a6e6a0d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ZMatrix.cpp">
@@ -50,6 +53,12 @@
     </ClCompile>
     <ClCompile Include="ZGraphicsResource.cpp">
       <Filter>ZD3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="ZTopology.cpp">
+      <Filter>Binderable</Filter>
+    </ClCompile>
+    <ClCompile Include="ZInputLayout.cpp">
+      <Filter>Binderable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +109,15 @@
     </ClInclude>
     <ClInclude Include="ZGraphicsResource.h">
       <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ZBindable.h">
+      <Filter>Binderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZTopology.h">
+      <Filter>Binderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZInputLayout.h">
+      <Filter>Binderable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

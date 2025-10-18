@@ -26,7 +26,9 @@
     <ClCompile Include="ZApplication.cpp" />
     <ClCompile Include="ZGraphics.cpp" />
     <ClCompile Include="ZGraphicsResource.cpp" />
+    <ClCompile Include="ZInputLayout.cpp" />
     <ClCompile Include="ZMatrix.cpp" />
+    <ClCompile Include="ZTopology.cpp" />
     <ClCompile Include="ZVector3.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -41,10 +43,13 @@
     <ClInclude Include="GraphicsThrowMacros.h" />
     <ClInclude Include="WindowsThrowMacros.h" />
     <ClInclude Include="ZApplication.h" />
+    <ClInclude Include="ZBindable.h" />
     <ClInclude Include="ZD3D11.h" />
     <ClInclude Include="ZGraphics.h" />
     <ClInclude Include="ZGraphicsResource.h" />
+    <ClInclude Include="ZInputLayout.h" />
     <ClInclude Include="ZMatrix.h" />
+    <ClInclude Include="ZTopology.h" />
     <ClInclude Include="ZVector3.h" />
   </ItemGroup>
   <ItemGroup>
@@ -182,7 +187,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);IS_DEBUG=true</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -196,7 +201,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);IS_DEBUG=false</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
