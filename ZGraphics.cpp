@@ -15,6 +15,7 @@ ZGraphics::ZGraphics(HWND hWnd, float winRatio, DWORD width, DWORD height)
     HRESULT hr;
 
     this->winRatio = winRatio;
+    this->m_hWnd = hWnd;
     this->m_ClientWidth = width;
     this->m_ClientHeight = height;
 
@@ -113,6 +114,23 @@ ZGraphics::ZGraphics(HWND hWnd, float winRatio, DWORD width, DWORD height)
 
     // bind depth stensil view to OM
     pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), pDSV.Get());
+
+    // create alpha blend state
+    D3D11_BLEND_DESC blendDesc = {};
+    blendDesc.RenderTarget[0].BlendEnable = TRUE;
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+    GFX_THROW_INFO(pDevice->CreateBlendState(&blendDesc, &pBlendState));
+
+    // Initialize SpriteBatch and Texture
+    pSpriteBatch = std::make_unique<dx::SpriteBatch>(pContext.Get());
+    pTexture = std::make_unique<Bind::ZTexture>(*this, L"dxlogo_256.bmp");
+    //pTexture->Load(*this, L"GameOver.bmp");
 }
 
 void ZGraphics::EndFrame()
@@ -145,6 +163,69 @@ void ZGraphics::ClearBuffer(float red, float green, float blue) noexcept
 	const float color[] = { red,green,blue,1.0f }; // RGBA 순서
 	pContext->ClearRenderTargetView(pTarget.Get(), color);
     pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+}
+
+// 뷰포트(Viewport)를 설정하는 함수
+// 뷰포트는 3D 공간의 렌더링 결과를 2D 화면의 어느 영역에 표시할지를 정의합니다.
+// 예를 들어, 분할 화면 게임에서 각 플레이어의 화면 영역을 지정할 때 사용됩니다.
+void ZGraphics::SetViewport() noexcept
+{
+    // D3D11_VIEWPORT 구조체를 생성하여 뷰포트 설정을 정의합니다.
+    D3D11_VIEWPORT vp;
+    
+    // Width: 뷰포트의 너비를 픽셀 단위로 설정합니다.
+    // 클라이언트 영역의 전체 너비를 사용합니다.
+    vp.Width = (float)m_ClientWidth;
+    
+    // Height: 뷰포트의 높이를 픽셀 단위로 설정합니다.
+    // 클라이언트 영역의 전체 높이를 사용합니다.
+    vp.Height = (float)m_ClientHeight;
+    
+    // MinDepth: 깊이 버퍼의 최소값입니다. (0.0 = 카메라에 가장 가까운 지점)
+    // 일반적으로 0.0으로 설정하여 Near Plane을 나타냅니다.
+    vp.MinDepth = 0;
+    
+    // MaxDepth: 깊이 버퍼의 최대값입니다. (1.0 = 카메라에서 가장 먼 지점)
+    // 일반적으로 1.0으로 설정하여 Far Plane을 나타냅니다.
+    vp.MaxDepth = 1;
+    
+    // TopLeftX: 뷰포트의 왼쪽 상단 X 좌표입니다.
+    // 0으로 설정하면 화면의 왼쪽 끝부터 시작합니다.
+    vp.TopLeftX = 0;
+    
+    // TopLeftY: 뷰포트의 왼쪽 상단 Y 좌표입니다.
+    // 0으로 설정하면 화면의 위쪽 끝부터 시작합니다.
+    vp.TopLeftY = 0;
+    
+    // RSSetViewports: Rasterizer Stage에 뷰포트를 설정합니다.
+    // 첫 번째 인자(1u): 설정할 뷰포트의 개수 (여러 개 설정 가능)
+    // 두 번째 인자(&vp): 뷰포트 구조체 배열의 포인터
+    pContext->RSSetViewports(1u, &vp);
+}
+
+void ZGraphics::RenderIndexed(UINT count) noxnd
+{
+    GFX_THROW_INFO_ONLY(pContext->DrawIndexed(count, 0u, 0u));
+}
+
+void ZGraphics::SetProjection(DirectX::FXMMATRIX proj) noexcept
+{
+    projection = proj;
+}
+
+DirectX::XMMATRIX ZGraphics::GetProjection() const noexcept
+{
+    return projection;
+}
+
+ID3D11Device* ZGraphics::GetDevice() const noexcept
+{
+    return pDevice.Get();
+}
+
+ID3D11DeviceContext* ZGraphics::GetContext() const noexcept
+{
+    return pContext.Get();
 }
 
 void ZGraphics::DrawTriangle()
@@ -534,6 +615,20 @@ void ZGraphics::DrawConstTriangle(float angle)
     pContext->RSSetViewports(1u, &vp);
 
     GFX_THROW_INFO_ONLY(pContext->DrawIndexed((UINT)std::size(indices), 0u, 0u));
+}
+
+void ZGraphics::DrawTexture()
+{
+    // 알파 블렌드 상태 활성화 (투명 텍스처 렌더링을 위해)
+    const float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    pContext->OMSetBlendState(pBlendState.Get(), blendFactor, 0xffffffff);
+
+    pSpriteBatch->Begin();
+    pTexture->Blit(pSpriteBatch.get(), { 0, 0 });
+    pSpriteBatch->End();
+
+    // 알파 블렌드 비활성화 (3D 객체 렌더링을 위해)
+    pContext->OMSetBlendState(nullptr, blendFactor, 0xffffffff);
 }
 
 void ZGraphics::DrawDepthCube(float angle, float x, float z)

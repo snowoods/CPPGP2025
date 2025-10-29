@@ -25,6 +25,12 @@
     <Filter Include="Binderable">
       <UniqueIdentifier>{6f965ad7-347c-48a1-ae56-5a08a6e6a0d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Renderable">
+      <UniqueIdentifier>{6b237fd0-daf5-4ffd-ac49-9e62058db980}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="State">
+      <UniqueIdentifier>{45a7b405-84ed-4eff-b029-ddfe64495dd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ZMatrix.cpp">
@@ -59,6 +65,42 @@
     </ClCompile>
     <ClCompile Include="ZInputLayout.cpp">
       <Filter>Binderable</Filter>
+    </ClCompile>
+    <ClCompile Include="ZVertexBuffer.cpp">
+      <Filter>Binderable</Filter>
+    </ClCompile>
+    <ClCompile Include="ZVertex.cpp">
+      <Filter>ZD3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="ZIndexBuffer.cpp">
+      <Filter>Binderable</Filter>
+    </ClCompile>
+    <ClCompile Include="ZVertexShader.cpp">
+      <Filter>Binderable</Filter>
+    </ClCompile>
+    <ClCompile Include="ZPixelShader.cpp">
+      <Filter>Binderable</Filter>
+    </ClCompile>
+    <ClCompile Include="ZTransformVSConstBuffer.cpp">
+      <Filter>Binderable</Filter>
+    </ClCompile>
+    <ClCompile Include="ZRenderable.cpp">
+      <Filter>Renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="SampleBox.cpp">
+      <Filter>Renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="ZTexture.cpp">
+      <Filter>Binderable</Filter>
+    </ClCompile>
+    <ClCompile Include="ZSampler.cpp">
+      <Filter>Binderable</Filter>
+    </ClCompile>
+    <ClCompile Include="Sheet.cpp">
+      <Filter>Renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicRenderState.cpp">
+      <Filter>State</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +161,69 @@
     <ClInclude Include="ZInputLayout.h">
       <Filter>Binderable</Filter>
     </ClInclude>
+    <ClInclude Include="ZVertexBuffer.h">
+      <Filter>Binderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZVertex.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ZColor.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ZConditionalNoExcept.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ZIndexBuffer.h">
+      <Filter>Binderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZConstBuffer.h">
+      <Filter>Binderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZVertexShader.h">
+      <Filter>Binderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZPixelShader.h">
+      <Filter>Binderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZBindableBase.h">
+      <Filter>Binderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZTransformVSConstBuffer.h">
+      <Filter>Binderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZRenderable.h">
+      <Filter>Renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZRenderableBase.h">
+      <Filter>Renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="SampleBox.h">
+      <Filter>Renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZTexture.h">
+      <Filter>Binderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZSampler.h">
+      <Filter>Binderable</Filter>
+    </ClInclude>
+    <ClInclude Include="Sheet.h">
+      <Filter>Renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZIndexedTriangleList.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>Renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="ZMath.h">
+      <Filter>ZD3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>State</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicRenderState.h">
+      <Filter>State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DXGetErrorDescription.inl">
@@ -130,6 +235,7 @@
     <None Include="DXTrace.inl">
       <Filter>Exception</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -151,6 +257,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="VertexShaderCubeDepth.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="TextureVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="TexturePS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

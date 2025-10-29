@@ -1,11 +1,16 @@
 ﻿#pragma once
 
 // 게임 윈도우 생성/관리
+class GameState;
+void ChangeState(GameState* newState, ZGraphics& gfx);
 
 class ZApp : public ZApplication
 {
 private:
 	ZGraphics* m_pGraphics;
+    std::vector<std::unique_ptr<class SampleBox>> boxes;
+    std::vector<std::unique_ptr<class Sheet>> sheets;
+    DWORD m_lastTime = 0;
 
 public:
 	virtual LRESULT CALLBACK MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -13,7 +18,7 @@ public:
 	ZApp(const TCHAR* pszCaption, DWORD XPos = 0, DWORD YPos = 0, 
         DWORD Width = 640, DWORD Height = 480,
         DWORD ClientWidth = 640, DWORD ClientHeight = 480);
-	~ZApp();
+	virtual ~ZApp();
 
 	DWORD GetWidth();
 	DWORD GetHeight();
