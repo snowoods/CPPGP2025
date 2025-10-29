@@ -96,12 +96,15 @@ namespace Dvtx // DirectX Vertex
                 }
             }
             assert("Could not resolve element type" && false);
-            return elements.front();
+            return elements[0]; // IntelliSense 경고 회피용
         }
         const Element& ResolveByIndex(size_t i) const noxnd;
         VertexLayout& Append(ElementType type) noxnd;
         size_t Size() const noxnd;
-        size_t GetElementCount() const noexcept;
+        size_t GetElementCount() const noexcept
+        {
+            return elements.size();
+        }
         std::vector<D3D11_INPUT_ELEMENT_DESC> GetD3DLayout() const noxnd;
     private:
         std::vector<Element> elements;
@@ -149,16 +152,22 @@ namespace Dvtx // DirectX Vertex
                 assert("Bad element type" && false);
             }
         }
-    protected:
-        Vertex(char* pData, const VertexLayout& layout) noxnd;
-    private:
         // enables parameter pack setting of multiple parameters by element index
         template<typename First, typename ...Rest>
         void SetAttributeByIndex(size_t i, First&& first, Rest&&... rest) noxnd
         {
-            SetAttributeByIndex(i, std::forward<First>(first));
-            SetAttributeByIndex(i + 1, std::forward<Rest>(rest)...);
+#ifndef __INTELLISENSE__
+            // 실제 컴파일러가 사용하는 코드 (정상 동작)
+            SetAttributeByIndex(i, std::forward<First>(first));  // calls single-param version
+            SetAttributeByIndex(i + 1, std::forward<Rest>(rest)...);  // recursive call
+#else
+            // IntelliSense가 보는 코드 (경고 방지용 더미)
+            (void)i; (void)first; (void)sizeof...(rest);
+#endif
         }
+    protected:
+        Vertex(char* pData, const VertexLayout& layout) noxnd;
+    private:
         // helper to reduce code duplication in SetAttributeByIndex
         template<VertexLayout::ElementType DestLayoutType, typename SrcType>
         void SetAttribute(char* pAttribute, SrcType&& val) noxnd

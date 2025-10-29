@@ -1,4 +1,4 @@
-﻿#include "ZD3D11.h"
+#include "ZD3D11.h"
 #include "ZVertex.h"
 
 namespace Dvtx
@@ -16,10 +16,6 @@ namespace Dvtx
     size_t VertexLayout::Size() const noxnd
     {
         return elements.empty() ? 0u : elements.back().GetOffsetAfter();
-    }
-    size_t VertexLayout::GetElementCount() const noexcept
-    {
-        return elements.size();
     }
     std::vector<D3D11_INPUT_ELEMENT_DESC> VertexLayout::GetD3DLayout() const noxnd
     {
