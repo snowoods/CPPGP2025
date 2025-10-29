@@ -1,5 +1,6 @@
 ﻿#include "ZD3D11.h"
 #include "ZVertex.h"
+#include "ZTexture.h"
 #include "Sheet.h"
 #include "Plane.h"
 #include "ZSampler.h"

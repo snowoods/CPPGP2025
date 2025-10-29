@@ -30,7 +30,7 @@ namespace Bind
     {
         Free();
 
-        if (gfx.GetDevice() == NULL)
+        if (GetDevice(gfx) == NULL)
             return FALSE;
         if (Filename == NULL)
             return FALSE;
@@ -42,7 +42,7 @@ namespace Bind
 
         Microsoft::WRL::ComPtr<ID3D11Resource> resource;
         GFX_THROW_INFO(DirectX::CreateWICTextureFromFile(
-            gfx.GetDevice(),
+            GetDevice(gfx),
             Filename,
             resource.GetAddressOf(),
             pTextureSRV.GetAddressOf()
@@ -92,14 +92,14 @@ namespace Bind
         //sd.SysMemPitch = gf.GetWidth() * sizeof(Surface::Color);
     
         Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2D;
-        GFX_THROW_INFO((gfx.GetDevice()->CreateTexture2D(&textureDesc, nullptr, texture2D.GetAddressOf())));
+        GFX_THROW_INFO((GetDevice(gfx)->CreateTexture2D(&textureDesc, nullptr, texture2D.GetAddressOf())));
 
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
         srvDesc.Format = textureDesc.Format;
         srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
         srvDesc.Texture2D.MostDetailedMip = 0;
         srvDesc.Texture2D.MipLevels = 1;
-        GFX_THROW_INFO((gfx.GetDevice()->CreateShaderResourceView(texture2D.Get(), &srvDesc, pTextureSRV.GetAddressOf())));
+        GFX_THROW_INFO((GetDevice(gfx)->CreateShaderResourceView(texture2D.Get(), &srvDesc, pTextureSRV.GetAddressOf())));
 
         return TRUE;
     }

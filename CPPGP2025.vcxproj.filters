@@ -102,6 +102,9 @@
     <ClCompile Include="BasicRenderState.cpp">
       <Filter>State</Filter>
     </ClCompile>
+    <ClCompile Include="BasicRenderStateEx.cpp">
+      <Filter>State</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ZMatrix.h">
@@ -148,9 +151,6 @@
     </ClInclude>
     <ClInclude Include="WindowsThrowMacros.h">
       <Filter>Exception</Filter>
-    </ClInclude>
-    <ClInclude Include="ZGraphicsResource.h">
-      <Filter>ZD3D11</Filter>
     </ClInclude>
     <ClInclude Include="ZBindable.h">
       <Filter>Binderable</Filter>
@@ -223,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="BasicRenderState.h">
       <Filter>State</Filter>
+    </ClInclude>
+    <ClInclude Include="ZGraphicsResource.h">
+      <Filter>ZD3D11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,7 @@
 // Windows includes
 #include <windows.h>
 #include <tchar.h>
+#include <mmsystem.h>
 
 // Standard ANSI-C includes
 #include <time.h>

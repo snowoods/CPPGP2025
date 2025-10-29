@@ -18,6 +18,11 @@ ID3D11RenderTargetView* ZGraphicsResource::GetTarget(ZGraphics& gfx) noexcept
     return gfx.pTarget.Get();
 }
 
+ID3D11BlendState* ZGraphicsResource::GetBlendState(ZGraphics& gfx) noexcept
+{
+    return gfx.pBlendState.Get();
+}
+
 DxgiInfoManager& ZGraphicsResource::GetInfoManager(ZGraphics& gfx)
 {
 #ifndef NDEBUG
@@ -35,4 +40,9 @@ DWORD ZGraphicsResource::GetClientWidth(ZGraphics& gfx)
 DWORD ZGraphicsResource::GetClientHeight(ZGraphics& gfx)
 {
     return gfx.m_ClientHeight;
+}
+
+double ZGraphicsResource::GetWinRatio(ZGraphics& gfx)
+{
+    return gfx.winRatio;
 }

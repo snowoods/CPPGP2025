@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BasicRenderState.cpp" />
+    <ClCompile Include="BasicRenderStateEx.cpp" />
     <ClCompile Include="ChiliException.cpp" />
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="DxgiInfoManager.cpp" />

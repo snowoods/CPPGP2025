@@ -3,10 +3,6 @@
 #include <wrl.h> // ComPtr
 #include "DxgiInfoManager.h"
 #include "ZConditionalNoExcept.h"
-#include "SampleBox.h"
-#include <memory> // for std::unique_ptr
-#include "SpriteBatch.h"
-#include "ZTexture.h"
 
 // D3D 11의 초기화 및 핵심 인터페이스 관리
 
@@ -24,17 +20,14 @@ private:
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
     Microsoft::WRL::ComPtr<ID3D11BlendState> pBlendState;	// 알파 블렌드 상태
 
-#ifndef NDEBUG
-	DxgiInfoManager infoManager;
-#endif
-
-    float winRatio;
+    double winRatio;
     HANDLE m_hWnd;
     DWORD m_ClientWidth;
     DWORD m_ClientHeight;
 
-    std::unique_ptr<DirectX::SpriteBatch> pSpriteBatch;
-    std::unique_ptr<Bind::ZTexture> pTexture;
+#ifndef NDEBUG
+	DxgiInfoManager infoManager;
+#endif
 
 public:
 	class Exception : public ChiliException
@@ -75,7 +68,7 @@ public:
 	};
 
 public:
-	ZGraphics(HWND hWnd, float winRatio, DWORD width, DWORD height);
+	ZGraphics(HWND hWnd, double winRatio, DWORD width, DWORD height);
 
 	// 복사 생성자와 대입 연산자를 사용하지 않는다. (객체 복사 방지)
 	// -- D3D 리소스 고유하게 유지
@@ -95,13 +88,4 @@ public:
     void RenderIndexed(UINT count) noxnd;
     void SetProjection(DirectX::FXMMATRIX proj) noexcept;
     DirectX::XMMATRIX GetProjection() const noexcept;
-    ID3D11Device* GetDevice() const noexcept;
-    ID3D11DeviceContext* GetContext() const noexcept;
-
-	// Basic
-	void DrawTriangle();
-    void DrawIndexedTriangle();
-    void DrawConstTriangle(float angle);
-    void DrawDepthCube(float angle, float x, float y); // using face color
-    void DrawTexture();
 };
